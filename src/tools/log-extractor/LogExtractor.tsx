@@ -8,14 +8,20 @@ import "../tool.css";
 export function LogExtractor() {
   const [input, setInput] = useState("");
   const [matches, setMatches] = useState<JsonMatch[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const setActiveTool = useAppStore((s) => s.setActiveTool);
   const setExtractedJson = useAppStore((s) => s.setExtractedJson);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const extract = useCallback(async () => {
     if (!input.trim()) return;
-    const result = await invoke<JsonMatch[]>("extract_json_cmd", { input });
-    setMatches(result);
+    setError(null);
+    try {
+      const result = await invoke<JsonMatch[]>("extract_json_cmd", { input });
+      setMatches(result);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }, [input]);
 
   const jumpToFormatter = useCallback(
@@ -27,7 +33,11 @@ export function LogExtractor() {
   );
 
   const copy = useCallback(async (value: unknown) => {
-    await navigator.clipboard.writeText(JSON.stringify(value, null, 2));
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(value, null, 2));
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }, []);
 
   return (
@@ -44,6 +54,7 @@ export function LogExtractor() {
           onChange={(e) => e.target.files?.[0] && e.target.files[0].text().then(setInput)}
         />
       </div>
+      {error && <div className="error-box">{error}</div>}
       <div className="split-view">
         <div className="pane">
           <div className="pane-title">日志输入</div>

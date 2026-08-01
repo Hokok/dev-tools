@@ -109,9 +109,15 @@ fn try_match(input: &str, start: usize, unescape: bool) -> Option<JsonMatch> {
 
 /// 找到与 start 处括号配平的结束位置（引号与转义感知）。
 /// 返回结束位置（不含）。
+/// 找到与 start 处括号配平的结束位置（引号与转义感知）。
+/// 返回结束位置（不含）。
+///
+/// 限制单次扫描窗口 `MAX_SCAN`，避免海量孤立括号导致 O(n²) 退化：
+/// 日志截断处常见大量未闭合 `{`，若每次都扫描到 EOF 会冻结 UI。
 fn find_balanced_end(input: &str, start: usize) -> Option<usize> {
+    const MAX_SCAN: usize = 256 * 1024;
     let bytes = input.as_bytes();
-    let n = bytes.len();
+    let n = bytes.len().min(start + MAX_SCAN);
     let mut depth = 0i32;
     let mut in_string = false;
     let mut i = start;

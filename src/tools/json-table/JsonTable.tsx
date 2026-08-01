@@ -43,8 +43,10 @@ export function toCsv(rows: Record<string, string>[]): string {
   if (rows.length === 0) return "";
   const headers = Object.keys(rows[0]);
   const escape = (s: string) => {
-    if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
-    return s;
+    // 防止 CSV 公式注入：以 = + - @ 开头的单元格前缀单引号
+    let v = /^[=+\-@]/.test(s) ? `'${s}` : s;
+    if (/[",\n]/.test(v)) v = `"${v.replace(/"/g, '""')}"`;
+    return v;
   };
   const lines = [headers.map(escape).join(",")];
   for (const r of rows) {

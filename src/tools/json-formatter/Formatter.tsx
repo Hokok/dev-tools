@@ -12,14 +12,17 @@ export function Formatter() {
   const [error, setError] = useState<ParseError | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const extractedJson = useAppStore((s) => s.extractedJson);
+  const setExtractedJson = useAppStore((s) => s.setExtractedJson);
 
-  // 从日志提取页跳转过来时，自动载入并格式化
+  // 从日志提取页跳转过来时，载入一次并格式化，随后立即消费掉，
+  // 避免切换缩进时 effect 用陈旧的 extractedJson 覆盖用户已编辑内容
   useEffect(() => {
     if (extractedJson) {
       setInput(extractedJson);
       invoke<string>("fmt_json", { input: extractedJson, indent }).then(setOutput).catch(setError);
+      setExtractedJson("");
     }
-  }, [extractedJson, indent]);
+  }, [extractedJson, indent, setExtractedJson]);
 
   const run = useCallback(
     async (mode: "format" | "minify") => {

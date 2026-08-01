@@ -1,10 +1,13 @@
 import { useCallback, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { JsonEditor } from "../../components/JsonEditor";
+import { TextDiffEditor } from "../../components/TextDiffEditor";
 import type { DiffNode, ParseError } from "../../types";
 import "../tool.css";
 
-/** 深度优先展开 diff 树，返回扁平化变更节点列表 */
+/** 深度优先展开 diff 树，返回扁平化变更节点列表。
+ * 跳过根节点本身（path 恒为 `$`，无展示意义），只收集其子节点中的变更。
+ */
 function flattenChanges(node: DiffNode, out: DiffNode[] = []): DiffNode[] {
   if (node.change !== "modified" || node.children.length === 0) {
     out.push(node);
@@ -35,7 +38,8 @@ export function JsonDiff() {
       ]);
       setLeftPretty(lp);
       setRightPretty(rp);
-      setChanges(flattenChanges(node));
+      // 收集根节点下的所有变更（跳过根自身，其 path 恒为 `$`）
+      setChanges(node.children.flatMap((c) => flattenChanges(c)));
     } catch (e) {
       setError(e as ParseError);
     }
@@ -63,9 +67,9 @@ export function JsonDiff() {
       </div>
       <div className="split-view" style={{ flex: 2 }}>
         <div className="pane">
-          <div className="pane-title">文本 diff（标准化后）</div>
+          <div className="pane-title">diff 视图（标准化后）</div>
           {leftPretty || rightPretty ? (
-            <JsonEditor value={leftPretty} readOnly />
+            <TextDiffEditor original={leftPretty} modified={rightPretty} />
           ) : (
             <div className="hint">点击「比对」查看结果</div>
           )}

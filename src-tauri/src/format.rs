@@ -31,11 +31,13 @@ fn serr(message: &str) -> ParseError {
 }
 
 /// 把 serde_json 的解析错误转换为带行列位置的结构
+///
+/// serde_json 的 line()/column() 均为 1-based，直接透传即可
 fn to_parse_error(e: serde_json::Error) -> ParseError {
     ParseError {
         message: e.to_string(),
         line: e.line() as usize,
-        column: e.column() as usize + 1,
+        column: e.column() as usize,
     }
 }
 
@@ -97,5 +99,12 @@ mod tests {
         assert!(err.line >= 2);
         assert!(err.column >= 1);
         assert!(!err.message.is_empty());
+    }
+
+    #[test]
+    fn error_column_is_one_based() {
+        // serde_json column() 为 1-based，`{"a":1}x` 的 x 在第 8 列
+        let err = format_json("{\"a\":1}x", 2).unwrap_err();
+        assert_eq!(err.column, 8);
     }
 }
