@@ -13,6 +13,8 @@ export function LogExtractor() {
   const setExtractedJson = useAppStore((s) => s.setExtractedJson);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const errMsg = (e: unknown) => (typeof e === "string" ? e : (e as Error).message);
+
   const extract = useCallback(async () => {
     if (!input.trim()) return;
     setError(null);
@@ -20,7 +22,7 @@ export function LogExtractor() {
       const result = await invoke<JsonMatch[]>("extract_json_cmd", { input });
       setMatches(result);
     } catch (e) {
-      setError((e as Error).message);
+      setError(errMsg(e));
     }
   }, [input]);
 
@@ -36,7 +38,7 @@ export function LogExtractor() {
     try {
       await navigator.clipboard.writeText(JSON.stringify(value, null, 2));
     } catch (e) {
-      setError((e as Error).message);
+      setError(errMsg(e));
     }
   }, []);
 

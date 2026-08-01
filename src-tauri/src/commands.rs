@@ -26,14 +26,15 @@ pub async fn extract_json_cmd(input: String) -> Vec<JsonMatch> {
 /// 结构化比对两个 JSON 文本
 #[tauri::command]
 pub async fn compare_json(left: String, right: String) -> Result<DiffNode, ParseError> {
-    let parse = |input: &str| -> Result<Value, ParseError> {
-        serde_json::from_str(input).map_err(|e| ParseError {
-            message: e.to_string(),
-            line: e.line() as usize,
-            column: e.column() as usize,
-        })
-    };
-    let l = parse(&left)?;
-    let r = parse(&right)?;
+    let l: Value = serde_json::from_str(&left).map_err(|e| ParseError {
+        message: format!("左值解析失败: {}", e),
+        line: e.line() as usize,
+        column: e.column() as usize,
+    })?;
+    let r: Value = serde_json::from_str(&right).map_err(|e| ParseError {
+        message: format!("右值解析失败: {}", e),
+        line: e.line() as usize,
+        column: e.column() as usize,
+    })?;
     Ok(diff_json(&l, &r))
 }

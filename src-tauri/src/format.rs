@@ -33,7 +33,7 @@ fn serr(message: &str) -> ParseError {
 /// 把 serde_json 的解析错误转换为带行列位置的结构
 ///
 /// serde_json 的 line()/column() 均为 1-based，直接透传即可
-fn to_parse_error(e: serde_json::Error) -> ParseError {
+pub(crate) fn to_parse_error(e: serde_json::Error) -> ParseError {
     ParseError {
         message: e.to_string(),
         line: e.line() as usize,
