@@ -2,18 +2,18 @@
   color-scheme: dark;
 }
 
-/* 深色主题（默认） */
+/* 深色主题（默认）—— 半透明背景让 macOS 毛玻璃透出 */
 :root[data-theme="dark"] {
-  --bg: #1e1e1e;
+  --bg: rgba(30, 30, 30, 0.62);
   --fg: #d4d4d4;
-  --sidebar-bg: #252526;
-  --sidebar-border: #333;
-  --sidebar-hover: #2d2d2d;
+  --sidebar-bg: rgba(37, 37, 38, 0.55);
+  --sidebar-border: rgba(51, 51, 51, 0.6);
+  --sidebar-hover: rgba(45, 45, 45, 0.6);
   --sidebar-active: #094771;
   --sidebar-active-fg: #fff;
   --accent: #9ecbff;
   --hover: #2a2d2e;
-  --border: #333;
+  --border: rgba(51, 51, 51, 0.6);
   --tool-btn-fg: #d4d4d4;
   --muted: #888;
   --error-bg: #4c1d24;
@@ -25,21 +25,22 @@
   --badge-removed-fg: #e8836a;
   --badge-modified-bg: #3a2f1b;
   --badge-modified-fg: #e0c56a;
+  --table-header-bg: rgba(30, 30, 30, 0.92);
 }
 
-/* 浅色主题 */
+/* 浅色主题 —— 半透明白让毛玻璃透出 */
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #ffffff;
+  --bg: rgba(248, 248, 250, 0.68);
   --fg: #1f2328;
-  --sidebar-bg: #f3f4f6;
-  --sidebar-border: #e0e0e0;
-  --sidebar-hover: #e8eaed;
+  --sidebar-bg: rgba(243, 244, 246, 0.6);
+  --sidebar-border: rgba(224, 224, 224, 0.7);
+  --sidebar-hover: rgba(232, 234, 237, 0.7);
   --sidebar-active: #cfe3ff;
   --sidebar-active-fg: #0b4f8a;
   --accent: #0b5cad;
   --hover: #e8eaed;
-  --border: #d4d4d4;
+  --border: rgba(212, 212, 212, 0.7);
   --tool-btn-fg: #1f2328;
   --muted: #6b7280;
   --error-bg: #fde8ec;
@@ -51,6 +52,7 @@
   --badge-removed-fg: #b91c1c;
   --badge-modified-bg: #fef3c7;
   --badge-modified-fg: #b45309;
+  --table-header-bg: rgba(248, 248, 250, 0.92);
 }
 
 html,
@@ -59,7 +61,8 @@ body,
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: var(--bg);
+  /* 透明背景交给 macOS vibrancy 呈现 */
+  background: transparent;
   color: var(--fg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -67,6 +70,8 @@ body,
 .app-shell {
   display: flex;
   height: 100%;
+  /* 整体半透明底，毛玻璃透出 */
+  background: var(--bg);
 }
 
 .sidebar {

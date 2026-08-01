@@ -182,6 +182,7 @@
 .data-table th {
   position: sticky;
   top: 0;
-  background: var(--bg);
+  /* 不透明底保证滚动时表头不穿透半透明背景 */
+  background: var(--table-header-bg);
   color: var(--accent);
 }
