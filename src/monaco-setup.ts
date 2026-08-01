@@ -1,4 +1,7 @@
-import * as monaco from "monaco-editor";
+// 精细导入：只加载 editor 核心 + json 语言，避免全量包带入 ts/html/css
+// 等 ~8MB 无用语言（CSP 要求本地加载，体积直接影响安装包）
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+import "monaco-editor/esm/vs/language/json/monaco.contribution";
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker.js?worker";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker.js?worker";
 import { loader } from "@monaco-editor/react";

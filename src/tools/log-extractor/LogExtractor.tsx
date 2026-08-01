@@ -5,6 +5,11 @@ import type { JsonMatch } from "../../types";
 import { useAppStore } from "../../store/app";
 import "../tool.css";
 
+/** invoke reject 可能是字符串或 Error，统一提取消息 */
+function errMsg(e: unknown): string {
+  return e instanceof Error ? e.message : String(e);
+}
+
 export function LogExtractor() {
   const [input, setInput] = useState("");
   const [matches, setMatches] = useState<JsonMatch[]>([]);
@@ -12,8 +17,6 @@ export function LogExtractor() {
   const setActiveTool = useAppStore((s) => s.setActiveTool);
   const setExtractedJson = useAppStore((s) => s.setExtractedJson);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  const errMsg = (e: unknown) => (typeof e === "string" ? e : (e as Error).message);
 
   const extract = useCallback(async () => {
     if (!input.trim()) return;

@@ -5,6 +5,10 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "monaco-editor/esm/vs/*": ["./node_modules/monaco-editor/esm/vs/*"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
