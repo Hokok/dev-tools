@@ -46,12 +46,11 @@ fn reindent(s: &str, indent: usize) -> String {
     }
     let unit = " ".repeat(indent);
     let mut out = String::with_capacity(s.len());
-    let mut depth = 0usize;
     for line in s.lines() {
         // serde_json pretty 输出每行缩进为 2*depth 空格
         let leading = line.len() - line.trim_start().len();
         let line_depth = leading / 2;
-        // 该行对应的实际层级 = 当前深度（闭合括号行已在循环体更新前判断）
+        // 闭合括号行需要回退一级
         let d = if line.trim_start().starts_with('}') || line.trim_start().starts_with(']') {
             line_depth.saturating_sub(1)
         } else {
@@ -60,7 +59,6 @@ fn reindent(s: &str, indent: usize) -> String {
         out.push_str(&unit.repeat(d));
         out.push_str(line.trim_start());
         out.push('\n');
-        depth = line_depth;
     }
     out.pop();
     out
