@@ -1,0 +1,103 @@
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+
+/// 解析错误：包含消息与 1-based 行列位置
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ParseError {
+    pub message: String,
+    pub line: usize,
+    pub column: usize,
+}
+
+/// 将 JSON 文本格式化为缩进美化形式
+pub fn format_json(input: &str, indent: usize) -> Result<String, ParseError> {
+    let v: Value = serde_json::from_str(input).map_err(to_parse_error)?;
+    let s = serde_json::to_string_pretty(&v).map_err(|e| serr(&e.to_string()))?;
+    Ok(reindent(&s, indent))
+}
+
+/// 将 JSON 文本压缩为单行
+pub fn minify_json(input: &str) -> Result<String, ParseError> {
+    let v: Value = serde_json::from_str(input).map_err(to_parse_error)?;
+    serde_json::to_string(&v).map_err(|e| serr(&e.to_string()))
+}
+
+fn serr(message: &str) -> ParseError {
+    ParseError {
+        message: message.to_string(),
+        line: 1,
+        column: 1,
+    }
+}
+
+/// 把 serde_json 的解析错误转换为带行列位置的结构
+fn to_parse_error(e: serde_json::Error) -> ParseError {
+    ParseError {
+        message: e.to_string(),
+        line: e.line() as usize,
+        column: e.column() as usize + 1,
+    }
+}
+
+/// 将 serde_json 默认的 2 空格缩进替换为指定宽度
+fn reindent(s: &str, indent: usize) -> String {
+    if indent == 2 {
+        return s.to_string();
+    }
+    let unit = " ".repeat(indent);
+    let mut out = String::with_capacity(s.len());
+    let mut depth = 0usize;
+    for line in s.lines() {
+        // serde_json pretty 输出每行缩进为 2*depth 空格
+        let leading = line.len() - line.trim_start().len();
+        let line_depth = leading / 2;
+        // 该行对应的实际层级 = 当前深度（闭合括号行已在循环体更新前判断）
+        let d = if line.trim_start().starts_with('}') || line.trim_start().starts_with(']') {
+            line_depth.saturating_sub(1)
+        } else {
+            line_depth
+        };
+        out.push_str(&unit.repeat(d));
+        out.push_str(line.trim_start());
+        out.push('\n');
+        depth = line_depth;
+    }
+    out.pop();
+    out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const SAMPLE: &str = r#"{"a":1,"b":{"c":[1,2],"d":"x"},"e":null}"#;
+
+    #[test]
+    fn format_pretty_default() {
+        let out = format_json(SAMPLE, 2).unwrap();
+        assert!(out.contains("\n  \"a\""));
+        assert!(out.contains("\n    \"c\""));
+    }
+
+    #[test]
+    fn format_pretty_indent4() {
+        let out = format_json(SAMPLE, 4).unwrap();
+        assert!(out.contains("\n    \"a\""));
+        assert!(out.contains("\n        \"c\""));
+    }
+
+    #[test]
+    fn minify_compacts() {
+        let pretty = format_json(SAMPLE, 2).unwrap();
+        let out = minify_json(&pretty).unwrap();
+        assert_eq!(out, SAMPLE);
+    }
+
+    #[test]
+    fn error_reports_line_column() {
+        let err = format_json("{\n  \"a\": [1,\n}", 2).unwrap_err();
+        assert!(err.line >= 2);
+        assert!(err.column >= 1);
+        assert!(!err.message.is_empty());
+    }
+}
