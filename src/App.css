@@ -2,14 +2,65 @@
   color-scheme: dark;
 }
 
+/* 深色主题（默认） */
+:root[data-theme="dark"] {
+  --bg: #1e1e1e;
+  --fg: #d4d4d4;
+  --sidebar-bg: #252526;
+  --sidebar-border: #333;
+  --sidebar-hover: #2d2d2d;
+  --sidebar-active: #094771;
+  --sidebar-active-fg: #fff;
+  --accent: #9ecbff;
+  --hover: #2a2d2e;
+  --border: #333;
+  --tool-btn-fg: #d4d4d4;
+  --muted: #888;
+  --error-bg: #4c1d24;
+  --error-fg: #ffb4b4;
+  --error-border: #7f2a35;
+  --badge-added-bg: #1b3a23;
+  --badge-added-fg: #6fce89;
+  --badge-removed-bg: #3a1b1b;
+  --badge-removed-fg: #e8836a;
+  --badge-modified-bg: #3a2f1b;
+  --badge-modified-fg: #e0c56a;
+}
+
+/* 浅色主题 */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --sidebar-bg: #f3f4f6;
+  --sidebar-border: #e0e0e0;
+  --sidebar-hover: #e8eaed;
+  --sidebar-active: #cfe3ff;
+  --sidebar-active-fg: #0b4f8a;
+  --accent: #0b5cad;
+  --hover: #e8eaed;
+  --border: #d4d4d4;
+  --tool-btn-fg: #1f2328;
+  --muted: #6b7280;
+  --error-bg: #fde8ec;
+  --error-fg: #b4232f;
+  --error-border: #f5c0c7;
+  --badge-added-bg: #dcfce7;
+  --badge-added-fg: #15803d;
+  --badge-removed-bg: #fee2e2;
+  --badge-removed-fg: #b91c1c;
+  --badge-modified-bg: #fef3c7;
+  --badge-modified-fg: #b45309;
+}
+
 html,
 body,
 #root {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: #1e1e1e;
-  color: #d4d4d4;
+  background: var(--bg);
+  color: var(--fg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -21,8 +72,8 @@ body,
 .sidebar {
   width: 180px;
   flex-shrink: 0;
-  background: #252526;
-  border-right: 1px solid #333;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
   padding: 12px 8px;
   display: flex;
   flex-direction: column;
@@ -33,7 +84,7 @@ body,
 .sidebar-title {
   font-size: 15px;
   font-weight: 600;
-  color: #9ecbff;
+  color: var(--accent);
   padding: 0 8px 12px;
 }
 
@@ -44,7 +95,7 @@ body,
   padding: 8px 10px;
   border: none;
   background: transparent;
-  color: #d4d4d4;
+  color: var(--tool-btn-fg);
   font-size: 13px;
   border-radius: 4px;
   cursor: pointer;
@@ -52,12 +103,12 @@ body,
 }
 
 .tool-btn:hover {
-  background: #2d2d2d;
+  background: var(--sidebar-hover);
 }
 
 .tool-btn.active {
-  background: #094771;
-  color: #fff;
+  background: var(--sidebar-active);
+  color: var(--sidebar-active-fg);
 }
 
 .tool-icon {
@@ -70,4 +121,8 @@ body,
   flex: 1;
   min-width: 0;
   min-height: 0;
+}
+
+.sidebar .spacer {
+  flex: 1;
 }

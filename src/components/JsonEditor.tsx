@@ -1,5 +1,6 @@
 import Editor, { type OnMount } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
+import { useAppStore } from "../store/app";
 
 export const editorOptions: editor.IStandaloneEditorConstructionOptions = {
   minimap: { enabled: false },
@@ -19,7 +20,7 @@ interface JsonEditorProps {
   language?: string;
 }
 
-/** 统一封装的 Monaco 编辑器（默认 JSON） */
+/** 统一封装的 Monaco 编辑器（默认 JSON），主题跟随全局设置 */
 export function JsonEditor({
   value,
   onChange,
@@ -28,11 +29,13 @@ export function JsonEditor({
   onMount,
   language = "json",
 }: JsonEditorProps) {
+  const theme = useAppStore((s) => s.theme);
+
   return (
     <Editor
       height={height}
       language={language}
-      theme="vs-dark"
+      theme={theme === "dark" ? "vs-dark" : "light"}
       value={value}
       onChange={(v) => onChange?.(v ?? "")}
       onMount={onMount}
