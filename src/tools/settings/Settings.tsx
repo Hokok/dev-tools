@@ -17,16 +17,16 @@ export function Settings() {
   const disabled = TOOLS.filter((t) => !order.includes(t.id));
   const items = [...enabled, ...disabled];
 
-  const onDragStart = useCallback((e: React.DragEvent, idx: number) => {
-    setDragIdx(idx);
+  const onDragStart = useCallback((e: React.DragEvent, orderIdx: number) => {
+    setDragIdx(orderIdx);
     e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", String(idx));
+    e.dataTransfer.setData("text/plain", String(orderIdx));
   }, []);
 
-  const onDragOver = useCallback((e: React.DragEvent, idx: number) => {
+  const onDragOver = useCallback((e: React.DragEvent, orderIdx: number) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    setOverIdx(idx);
+    setOverIdx(orderIdx);
   }, []);
 
   const onDragLeave = useCallback(() => {
@@ -63,21 +63,25 @@ export function Settings() {
         </button>
       </div>
       <div className="settings-list">
-        {items.map((tool, idx) => {
+        {items.map((tool) => {
           const orderIdx = order.indexOf(tool.id);
           const isEnabled = orderIdx >= 0;
-          const isDragging = dragIdx === idx;
+          const isDragging = dragIdx === orderIdx;
           return (
             <div
               key={tool.id}
-              className={`settings-item${isDragging ? " dragging" : ""}${overIdx === idx && dragIdx !== idx ? " drag-over" : ""}`}
+              className={`settings-item${isDragging ? " dragging" : ""}${overIdx === orderIdx && dragIdx !== orderIdx ? " drag-over" : ""}`}
               draggable={isEnabled}
-              onDragStart={(e) => onDragStart(e, idx)}
+              onDragStart={(e) => {
+                if (isEnabled) onDragStart(e, orderIdx);
+              }}
               onDragOver={(e) => {
-                if (orderIdx >= 0) onDragOver(e, idx);
+                if (isEnabled) onDragOver(e, orderIdx);
               }}
               onDragLeave={onDragLeave}
-              onDrop={(e) => onDrop(e, idx)}
+              onDrop={(e) => {
+                if (isEnabled) onDrop(e, orderIdx);
+              }}
               onDragEnd={onDragEnd}
             >
               {isEnabled && (

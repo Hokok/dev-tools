@@ -50,19 +50,21 @@ export function Formatter() {
   }, [extractedJson, indent, setExtractedJson]);
 
   const run = useCallback(
-    async (mode: "format" | "minify") => {
+    async (mode: "format" | "minify" | "unescape") => {
       if (!input.trim()) return;
       setError(null);
       try {
         const result =
           mode === "format"
             ? await invoke<string>("fmt_json", { input, indent })
-            : await invoke<string>("min_json", { input });
+            : mode === "minify"
+              ? await invoke<string>("min_json", { input })
+              : await invoke<string>("fmt_unescape", { input });
         setOutput(result);
         addHistory({
           toolId: "json-formatter",
           toolName: "JSON 格式化",
-          action: mode === "format" ? "格式化" : "压缩",
+          action: mode === "format" ? "格式化" : mode === "minify" ? "压缩" : "去转义",
           payload: { input },
         });
       } catch (e) {
@@ -107,6 +109,7 @@ export function Formatter() {
           格式化
         </button>
         <button className="btn" onClick={() => run("minify")}>压缩</button>
+        <button className="btn" onClick={() => run("unescape")}>去转义</button>
         <label>
           缩进
           <select value={indent} onChange={(e) => setIndent(Number(e.target.value))}>

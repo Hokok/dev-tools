@@ -22,6 +22,15 @@ pub fn minify_json(input: &str) -> Result<String, ParseError> {
     serde_json::to_string(&v).map_err(|e| serr(&e.to_string()))
 }
 
+/// 反转义并格式化 JSON 字符串：输入为转义后的 JSON 文本（如 `{\"a\":1}`），
+/// 先解除转义再格式化为美化 JSON。
+pub fn unescape_json(input: &str) -> Result<String, ParseError> {
+    let quoted = format!("\"{}\"", input);
+    let unescaped: String = serde_json::from_str(&quoted).map_err(to_parse_error)?;
+    let v: Value = serde_json::from_str(&unescaped).map_err(to_parse_error)?;
+    serde_json::to_string_pretty(&v).map_err(|e| serr(&e.to_string()))
+}
+
 fn serr(message: &str) -> ParseError {
     ParseError {
         message: message.to_string(),
