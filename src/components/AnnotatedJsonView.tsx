@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { editor } from "monaco-editor";
 import type { OnMount } from "@monaco-editor/react";
 import { JsonEditor } from "./JsonEditor";
@@ -15,10 +15,15 @@ function countClass(marker: FoldMarker): string {
     styleEl = document.createElement("style");
     document.head.appendChild(styleEl);
   }
-  const cls = `jt-${marker.kind}-${marker.count}`;
-  const label = marker.kind === "array" ? ` [${marker.count} 项]` : ` {${marker.count} 项}`;
-  styleEl.sheet?.insertRule(
-    `.monaco-editor .${cls}::after { content: "${label}"; color: var(--muted); }`,
+  const cls = `jfc-${marker.kind}-${marker.count}`;
+  const label = ` ... ${marker.count}`;
+  if (!styleEl.sheet) {
+    console.warn("countClass: styleEl.sheet is null, cannot inject CSS");
+    countClasses.set(key, cls);
+    return cls;
+  }
+  styleEl.sheet.insertRule(
+    `.monaco-editor .${cls}::after { content: "${label}"; opacity: 0.7; margin-left: 4px; }`,
   );
   countClasses.set(key, cls);
   return cls;
@@ -26,11 +31,15 @@ function countClass(marker: FoldMarker): string {
 
 interface Props {
   value: unknown;
-  /** 指定显示文本，不传时由 value 重新序列化生成 */
+  /** 不传时由 value 重新序列化生成 */
   displayText?: string;
 }
 
-/** 只读 JSON 展示：数组开头标注 [N 项]，对象标注 {N 项}，不修改 JSON 文本 */
+/**
+ * 只读 JSON 展示。
+ * 折叠的数组/对象在括号所在行右侧标注 `... N`（N 为元素个数），
+ * 展开后标注自动隐藏。不修改 JSON 文本。
+ */
 export function AnnotatedJsonView({ value, displayText }: Props) {
   const { text, markers } = useMemo(() => {
     const { text, markers } = annotatedJson(value);
@@ -39,27 +48,44 @@ export function AnnotatedJsonView({ value, displayText }: Props) {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const decIds = useRef<string[]>([]);
 
-  const applyDecorations = () => {
+  const applyFoldedDecorations = useCallback(() => {
     const ed = editorRef.current;
     if (!ed) return;
-    const decs = markers.map((m) => ({
-      range: {
-        startLineNumber: m.line,
-        startColumn: 1,
-        endLineNumber: m.line,
-        endColumn: 1,
-      },
-      options: { afterContentClassName: countClass(m) },
-    }));
+
+    const visible = ed.getVisibleRanges();
+    const decs: editor.IModelDeltaDecoration[] = [];
+    for (const m of markers) {
+      const nextLine = m.line + 1;
+      const nextVisible = visible.some(
+        (r) => r.startLineNumber <= nextLine && nextLine <= r.endLineNumber,
+      );
+      if (nextVisible) continue;
+      decs.push({
+        range: {
+          startLineNumber: m.line,
+          startColumn: 1,
+          endLineNumber: m.line,
+          endColumn: 1,
+        },
+        options: { afterContentClassName: countClass(m) },
+      });
+    }
     decIds.current = ed.deltaDecorations(decIds.current, decs);
-  };
+  }, [markers]);
 
-  const handleMount: OnMount = (ed) => {
+  const handleMount: OnMount = useCallback((ed) => {
     editorRef.current = ed;
-    applyDecorations();
-  };
+  }, []);
 
-  useEffect(applyDecorations, [markers]);
+  useEffect(() => {
+    const ed = editorRef.current;
+    if (!ed) return;
+    applyFoldedDecorations();
+    const disposable = ed.onDidChangeHiddenAreas(() => {
+      applyFoldedDecorations();
+    });
+    return () => disposable.dispose();
+  }, [applyFoldedDecorations]);
 
   return <JsonEditor value={text} readOnly onMount={handleMount} />;
 }
