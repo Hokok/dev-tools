@@ -128,7 +128,7 @@ export function RegexTester() {
             {f}
           </label>
         ))}
-        <button data-hotkey="run" onClick={record} disabled={!pattern}>
+        <button className="btn" data-hotkey="run" onClick={record} disabled={!pattern}>
           记录
         </button>
         <span className="hint">命中 {matches.length} 处</span>

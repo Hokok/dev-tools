@@ -19,7 +19,7 @@ export function Settings() {
       <div className="toolbar">
         <span className="hint">勾选要显示在侧边栏的工具，↑↓ 调整显示顺序</span>
         <span className="spacer" />
-        <button onClick={reset}>恢复默认</button>
+        <button className="btn btn-danger" onClick={reset}>恢复默认</button>
       </div>
       <div className="settings-list">
         {items.map((tool) => {
@@ -39,10 +39,10 @@ export function Settings() {
               <span className="spacer" />
               {isEnabled && (
                 <>
-                  <button disabled={idx === 0} onClick={() => move(tool.id, -1)}>
+                  <button className="btn btn-sm" disabled={idx === 0} onClick={() => move(tool.id, -1)}>
                     ↑
                   </button>
-                  <button disabled={idx === order.length - 1} onClick={() => move(tool.id, 1)}>
+                  <button className="btn btn-sm" disabled={idx === order.length - 1} onClick={() => move(tool.id, 1)}>
                     ↓
                   </button>
                 </>

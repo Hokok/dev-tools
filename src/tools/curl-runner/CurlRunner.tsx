@@ -58,7 +58,7 @@ export function CurlRunner() {
   return (
     <div className="tool-page">
       <div className="toolbar">
-        <button data-hotkey="run" onClick={run} disabled={!input.trim() || loading}>
+        <button className="btn btn-primary" data-hotkey="run" onClick={run} disabled={!input.trim() || loading}>
           {loading ? "执行中…" : "执行"}
         </button>
         <span className="hint">粘贴 curl 脚本 → 执行（系统 curl 直发，支持全部语法）</span>
@@ -66,7 +66,7 @@ export function CurlRunner() {
           ⚠️ 由系统 curl 执行
         </span>
         <span className="spacer" />
-        <button onClick={() => setInput("")}>清空</button>
+        <button className="btn" onClick={() => setInput("")}>清空</button>
         <ToolHistory toolId="curl-runner" />
       </div>
       {runError && <div className="error-box">执行失败: {runError}</div>}

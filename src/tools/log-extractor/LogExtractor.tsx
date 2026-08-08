@@ -93,15 +93,15 @@ export function LogExtractor() {
   return (
     <div className="tool-page">
       <div className="toolbar">
-        <button data-hotkey="run" onClick={extract}>
+        <button className="btn btn-primary" data-hotkey="run" onClick={extract}>
           提取 JSON
         </button>
-        <button onClick={copyAll} disabled={matches.length === 0}>
+        <button className="btn" onClick={copyAll} disabled={matches.length === 0}>
           复制全部
         </button>
         <span className="hint">支持转义 JSON（如 {"{\"a\":1}"}）、跨行、日志前缀</span>
         <span className="spacer" />
-        <button onClick={() => fileRef.current?.click()}>打开日志文件</button>
+        <button className="btn" onClick={() => fileRef.current?.click()}>打开日志文件</button>
         <input
           ref={fileRef}
           type="file"
@@ -144,8 +144,8 @@ export function LogExtractor() {
                       [{activeMatch.start}..{activeMatch.end})
                     </span>
                     <span className="spacer" />
-                    <button onClick={() => formatMatch(activeMatch)}>格式化</button>
-                    <button onClick={() => copyMatch(activeMatch)}>复制</button>
+                    <button className="btn btn-sm" onClick={() => formatMatch(activeMatch)}>格式化</button>
+                    <button className="btn btn-sm" onClick={() => copyMatch(activeMatch)}>复制</button>
                   </div>
                   <div className="match-preview">
                     {/* 与 JSON 格式化页一致：Monaco 只读展示，数组行尾标注元素数量 */}

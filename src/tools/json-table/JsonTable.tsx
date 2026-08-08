@@ -109,18 +109,18 @@ export function JsonTable() {
   return (
     <div className="tool-page">
       <div className="toolbar">
-        <button onClick={parse}>转表格</button>
+        <button className="btn btn-primary" onClick={parse}>转表格</button>
         {rows && (
           <>
-            <button onClick={() => download(toCsv(rows), "export.csv", "text/csv")}>导出 CSV</button>
-            <button onClick={() => download(toJsonl(rows), "export.jsonl", "application/x-ndjson")}>
+            <button className="btn" onClick={() => download(toCsv(rows), "export.csv", "text/csv")}>导出 CSV</button>
+            <button className="btn" onClick={() => download(toJsonl(rows), "export.jsonl", "application/x-ndjson")}>
               导出 JSONL
             </button>
             <span className="hint">{rows.length} 行</span>
           </>
         )}
         <span className="spacer" />
-        <button onClick={() => fileRef.current?.click()}>打开文件</button>
+        <button className="btn" onClick={() => fileRef.current?.click()}>打开文件</button>
         <input
           ref={fileRef}
           type="file"

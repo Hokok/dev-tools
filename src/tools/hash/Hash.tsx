@@ -94,10 +94,11 @@ export function Hash() {
             {a}
           </label>
         ))}
-        <button data-hotkey="run" onClick={run} disabled={!input}>
+        <button className="btn btn-primary" data-hotkey="run" onClick={run} disabled={!input}>
           计算
         </button>
         <button
+          className="btn"
           data-hotkey="copy"
           onClick={() => {
             if (!outputText) return;
@@ -110,7 +111,7 @@ export function Hash() {
           复制全部
         </button>
         <span className="spacer" />
-        <button onClick={() => fileRef.current?.click()}>哈希文件</button>
+        <button className="btn" onClick={() => fileRef.current?.click()}>哈希文件</button>
         <input
           ref={fileRef}
           type="file"
@@ -138,7 +139,7 @@ export function Hash() {
                     <code className="hash-value" title={hex}>
                       {hex}
                     </code>
-                    <button onClick={() => copyHash(algo)}>复制</button>
+                    <button className="btn btn-sm" onClick={() => copyHash(algo)}>复制</button>
                   </div>
                 ) : null,
               )}

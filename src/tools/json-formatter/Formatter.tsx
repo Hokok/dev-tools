@@ -98,10 +98,10 @@ export function Formatter() {
   return (
     <div className="tool-page">
       <div className="toolbar">
-        <button data-hotkey="run" onClick={() => run("format")}>
+        <button className="btn btn-primary" data-hotkey="run" onClick={() => run("format")}>
           格式化
         </button>
-        <button onClick={() => run("minify")}>压缩</button>
+        <button className="btn" onClick={() => run("minify")}>压缩</button>
         <label>
           缩进
           <select value={indent} onChange={(e) => setIndent(Number(e.target.value))}>
@@ -113,11 +113,11 @@ export function Formatter() {
           <input type="checkbox" checked={autoRun} onChange={(e) => setAutoRun(e.target.checked)} />
           自动格式化
         </label>
-        <button data-hotkey="copy" onClick={copyResult} disabled={!output}>
+        <button className="btn" data-hotkey="copy" onClick={copyResult} disabled={!output}>
           复制结果
         </button>
         <span className="spacer" />
-        <button onClick={() => fileRef.current?.click()}>打开文件</button>
+        <button className="btn" onClick={() => fileRef.current?.click()}>打开文件</button>
         <input
           ref={fileRef}
           type="file"

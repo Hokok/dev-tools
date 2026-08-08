@@ -26,7 +26,7 @@ export function History() {
   return (
     <div className="tool-page">
       <div className="toolbar">
-        <button onClick={clearHistory} disabled={items.length === 0}>
+        <button className="btn btn-danger" onClick={clearHistory} disabled={items.length === 0}>
           清空历史
         </button>
         <span className="hint">共 {items.length} 条（最多 30 条）</span>
@@ -43,9 +43,9 @@ export function History() {
                 <span className="hint">{item.action}</span>
                 <span className="hint">{fmtTime(item.timestamp)}</span>
                 <span className="spacer" />
-                <button onClick={() => loadFromHistory(item)}>加载</button>
-                <button onClick={() => copyInput(item)}>复制输入</button>
-                <button onClick={() => removeItem(item.id)}>删除</button>
+                <button className="btn btn-sm" onClick={() => loadFromHistory(item)}>加载</button>
+                <button className="btn btn-sm" onClick={() => copyInput(item)}>复制输入</button>
+                <button className="btn btn-sm btn-danger" onClick={() => removeItem(item.id)}>删除</button>
               </div>
               <div className="match-preview" title={Object.values(item.payload)[0] ?? ""}>
                 {item.preview}
