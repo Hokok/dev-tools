@@ -21,7 +21,7 @@ function flatten(obj: unknown, prefix = "", out: Record<string, string> = {}): R
       if (v !== null && typeof v === "object") {
         flatten(v, key, out);
       } else {
-        out[key] = String(v);
+        out[key] = v === null ? "" : String(v);
       }
     }
     return out;

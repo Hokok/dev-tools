@@ -50,7 +50,7 @@ export function CurlRunner() {
   const view = useMemo(() => {
     if (!result) return null;
     try {
-      return { parsed: JSON.parse(result.body), raw: false, rawBody: result.body };
+      return { parsed: JSON.parse(result.body), raw: false };
     } catch {
       return { rawBody: result.body, raw: true };
     }
@@ -98,9 +98,9 @@ export function CurlRunner() {
           <div className="pane">
             <div className="pane-title">响应体{view.raw ? "" : "（JSON）"}</div>
             {view.raw ? (
-              <JsonEditor value={view.rawBody} readOnly language="text" />
+              <JsonEditor value={view.rawBody ?? ""} readOnly language="text" />
             ) : (
-              <AnnotatedJsonView value={view.parsed} displayText={view.rawBody} />
+              <AnnotatedJsonView value={view.parsed} />
             )}
           </div>
         </div>
