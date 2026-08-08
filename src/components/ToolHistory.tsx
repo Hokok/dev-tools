@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useHistoryStore, type HistoryItem } from "../store/history";
 import "./tool-history.css";
 
@@ -21,12 +21,20 @@ function fmtTime(ts: number): string {
  */
 export function ToolHistory({ toolId, emptyText = "暂无该工具的历史记录" }: ToolHistoryProps) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const items = useHistoryStore((s) => s.items);
   const loadFromHistory = useHistoryStore((s) => s.loadFromHistory);
   const removeItem = useHistoryStore((s) => s.removeItem);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  const toolItems = items.filter((it) => it.toolId === toolId);
+  const toolItems = useMemo(() => {
+    const base = items.filter((it) => it.toolId === toolId);
+    if (!query.trim()) return base;
+    const q = query.toLowerCase();
+    return base.filter((it) =>
+      [it.toolName, it.action, it.preview].some((f) => f.toLowerCase().includes(q)),
+    );
+  }, [items, toolId, query]);
 
   // 点击组件外部时关闭下拉
   useEffect(() => {
@@ -46,6 +54,8 @@ export function ToolHistory({ toolId, emptyText = "暂无该工具的历史记�
     [loadFromHistory],
   );
 
+  const hasItems = items.filter((it) => it.toolId === toolId).length > 0;
+
   return (
     <div className="tool-history" ref={rootRef}>
       <button className="tool-history-btn btn" onClick={() => setOpen((v) => !v)} title="查看该工具的历史记录">
@@ -54,8 +64,18 @@ export function ToolHistory({ toolId, emptyText = "暂无该工具的历史记�
       </button>
       {open && (
         <div className="tool-history-dropdown">
+          {hasItems && (
+            <input
+              className="tool-history-search"
+              type="text"
+              placeholder="搜索历史记录…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              autoFocus
+            />
+          )}
           {toolItems.length === 0 ? (
-            <div className="tool-history-empty">{emptyText}</div>
+            <div className="tool-history-empty">{hasItems ? "无匹配结果" : emptyText}</div>
           ) : (
             <>
               {toolItems.slice(0, 20).map((item) => (

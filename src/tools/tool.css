@@ -141,8 +141,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  flex: 1;
-  min-height: 0;
+  flex-shrink: 0;
 }
 
 .match-actions {
@@ -152,9 +151,14 @@
 }
 
 .match-preview {
-  flex: 1;
-  min-height: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-family: ui-monospace, monospace;
+  color: var(--tool-btn-fg);
+  line-height: 1.4;
+  min-height: 1.4em;
 }
 
 /* 日志提取：命中选择条 */

@@ -38,6 +38,25 @@
   gap: 4px;
 }
 
+.tool-history-search {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0 0 2px;
+  padding: 6px 8px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--fg);
+  outline: none;
+  flex-shrink: 0;
+}
+
+.tool-history-search:focus {
+  border-color: var(--accent);
+}
+
 .tool-history-empty {
   padding: 12px 8px;
   color: var(--muted);
@@ -52,6 +71,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .tool-history-head {
@@ -67,6 +87,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.4;
+  min-height: 1.4em;
 }
 
 .tool-history-actions {

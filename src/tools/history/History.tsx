@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useHistoryStore, type HistoryItem } from "../../store/history";
 import "../tool.css";
 
@@ -9,10 +9,19 @@ function fmtTime(ts: number): string {
 }
 
 export function History() {
+  const [query, setQuery] = useState("");
   const items = useHistoryStore((s) => s.items);
   const loadFromHistory = useHistoryStore((s) => s.loadFromHistory);
   const removeItem = useHistoryStore((s) => s.removeItem);
   const clearHistory = useHistoryStore((s) => s.clearHistory);
+
+  const filtered = useMemo(() => {
+    if (!query.trim()) return items;
+    const q = query.toLowerCase();
+    return items.filter((it) =>
+      [it.toolName, it.action, it.preview].some((f) => f.toLowerCase().includes(q)),
+    );
+  }, [items, query]);
 
   const copyInput = useCallback(async (item: HistoryItem) => {
     const first = Object.values(item.payload)[0] ?? "";
@@ -26,6 +35,13 @@ export function History() {
   return (
     <div className="tool-page">
       <div className="toolbar">
+        <input
+          className="text-input"
+          type="text"
+          placeholder="搜索历史记录…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
         <button className="btn btn-danger" onClick={clearHistory} disabled={items.length === 0}>
           清空历史
         </button>
@@ -34,9 +50,11 @@ export function History() {
       </div>
       {items.length === 0 ? (
         <div className="hint">暂无历史记录。执行工具操作后会自动记录输入内容。</div>
+      ) : filtered.length === 0 ? (
+        <div className="hint">无匹配结果</div>
       ) : (
         <div className="match-list">
-          {items.map((item) => (
+          {filtered.map((item) => (
             <div key={item.id} className="match-item">
               <div className="match-actions">
                 <span className="badge">{item.toolName}</span>
