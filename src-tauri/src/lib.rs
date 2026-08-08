@@ -11,6 +11,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::fmt_json,
             commands::min_json,
+            commands::fmt_unescape,
             commands::extract_json_cmd,
             commands::compare_json,
             commands::run_curl_script_cmd,

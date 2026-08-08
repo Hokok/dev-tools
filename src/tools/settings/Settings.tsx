@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useRef, useState } from "react";
 import { TOOLS } from "../index";
 import { useSettingsStore } from "../../store/settings";
 import "../tool.css";
@@ -9,7 +9,7 @@ export function Settings() {
   const setEnabled = useSettingsStore((s) => s.setEnabled);
   const reorder = useSettingsStore((s) => s.reorder);
   const reset = useSettingsStore((s) => s.reset);
-  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const dragIdxRef = useRef<number | null>(null);
   const [overIdx, setOverIdx] = useState<number | null>(null);
 
   // 已启用按配置顺序在前，未启用的工具排后供勾选
@@ -17,41 +17,39 @@ export function Settings() {
   const disabled = TOOLS.filter((t) => !order.includes(t.id));
   const items = [...enabled, ...disabled];
 
-  const onDragStart = useCallback((e: React.DragEvent, orderIdx: number) => {
-    setDragIdx(orderIdx);
+  const handleDragStart = (e: React.DragEvent, orderIdx: number) => {
+    dragIdxRef.current = orderIdx;
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/plain", String(orderIdx));
-  }, []);
+  };
 
-  const onDragOver = useCallback((e: React.DragEvent, orderIdx: number) => {
+  const handleDragOver = (e: React.DragEvent, orderIdx: number) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
     setOverIdx(orderIdx);
-  }, []);
+  };
 
-  const onDragLeave = useCallback(() => {
+  const handleDragLeave = () => {
     setOverIdx(null);
-  }, []);
+  };
 
-  const onDrop = useCallback(
-    (e: React.DragEvent, toIdx: number) => {
-      e.preventDefault();
-      if (dragIdx === null || dragIdx === toIdx) {
-        setDragIdx(null);
-        setOverIdx(null);
-        return;
-      }
-      reorder(dragIdx, toIdx);
-      setDragIdx(null);
+  const handleDrop = (e: React.DragEvent, toIdx: number) => {
+    e.preventDefault();
+    const fromIdx = dragIdxRef.current;
+    if (fromIdx === null || fromIdx === toIdx) {
+      dragIdxRef.current = null;
       setOverIdx(null);
-    },
-    [dragIdx, reorder],
-  );
-
-  const onDragEnd = useCallback(() => {
-    setDragIdx(null);
+      return;
+    }
+    reorder(fromIdx, toIdx);
+    dragIdxRef.current = null;
     setOverIdx(null);
-  }, []);
+  };
+
+  const handleDragEnd = () => {
+    dragIdxRef.current = null;
+    setOverIdx(null);
+  };
 
   return (
     <div className="tool-page">
@@ -66,23 +64,23 @@ export function Settings() {
         {items.map((tool) => {
           const orderIdx = order.indexOf(tool.id);
           const isEnabled = orderIdx >= 0;
-          const isDragging = dragIdx === orderIdx;
+          const isDragging = dragIdxRef.current === orderIdx;
           return (
             <div
               key={tool.id}
-              className={`settings-item${isDragging ? " dragging" : ""}${overIdx === orderIdx && dragIdx !== orderIdx ? " drag-over" : ""}`}
+              className={`settings-item${isDragging ? " dragging" : ""}${overIdx === orderIdx && dragIdxRef.current !== orderIdx ? " drag-over" : ""}`}
               draggable={isEnabled}
               onDragStart={(e) => {
-                if (isEnabled) onDragStart(e, orderIdx);
+                if (isEnabled) handleDragStart(e, orderIdx);
               }}
               onDragOver={(e) => {
-                if (isEnabled) onDragOver(e, orderIdx);
+                if (isEnabled) handleDragOver(e, orderIdx);
               }}
-              onDragLeave={onDragLeave}
+              onDragLeave={handleDragLeave}
               onDrop={(e) => {
-                if (isEnabled) onDrop(e, orderIdx);
+                if (isEnabled) handleDrop(e, orderIdx);
               }}
-              onDragEnd={onDragEnd}
+              onDragEnd={handleDragEnd}
             >
               {isEnabled && (
                 <span className="drag-handle" title="拖拽排序">
