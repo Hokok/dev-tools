@@ -67,7 +67,7 @@ export function AnnotatedJsonView({ value, displayText }: Props) {
           startLineNumber: m.line,
           startColumn: 1,
           endLineNumber: m.line,
-          endColumn: 1,
+          endColumn: 2,
         },
         options: { afterContentClassName: countClass(m) },
       });
