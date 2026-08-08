@@ -6,7 +6,7 @@ import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { useFileDrop } from "../../hooks/useFileDrop";
-import { AnnotatedJsonView } from "../../components/AnnotatedJsonView";
+import { JsonOutput } from "../../components/JsonOutput";
 import type { JsonMatch } from "../../types";
 import "../tool.css";
 
@@ -151,9 +151,8 @@ export function LogExtractor() {
                     <button className="btn btn-sm" onClick={() => formatMatch(activeMatch)}>格式化</button>
                     <button className="btn btn-sm" onClick={() => copyMatch(activeMatch)}>复制</button>
                   </div>
-                  <div className="match-preview">
-                    {/* 与 JSON 格式化页一致：Monaco 只读展示，数组行尾标注元素数量 */}
-                    <AnnotatedJsonView value={activeMatch.value} />
+                  <div className="match-preview" style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
+                    <JsonOutput value={JSON.stringify(activeMatch.value, null, 2)} />
                   </div>
                 </>
               )}
