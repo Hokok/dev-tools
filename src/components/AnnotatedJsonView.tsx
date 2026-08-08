@@ -2,31 +2,16 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { editor } from "monaco-editor";
 import type { OnMount } from "@monaco-editor/react";
 import { JsonEditor } from "./JsonEditor";
-import { annotatedJson, type FoldMarker } from "../utils/arrayMarkers";
+import { annotatedJson } from "../utils/arrayMarkers";
 
 let styleEl: HTMLStyleElement | null = null;
-const countClasses = new Map<string, string>();
 
-function countClass(marker: FoldMarker): string {
-  const key = `${marker.kind}-${marker.count}`;
-  const cached = countClasses.get(key);
-  if (cached) return cached;
+function injectStyle() {
   if (!styleEl) {
     styleEl = document.createElement("style");
+    styleEl.textContent = ".fold-count { background: rgba(128,128,128,0.15); border-radius: 3px; padding: 0 2px; opacity: 0.75; }";
     document.head.appendChild(styleEl);
   }
-  const cls = `jfc-${marker.kind}-${marker.count}`;
-  const label = ` ... ${marker.count}`;
-  if (!styleEl.sheet) {
-    console.warn("countClass: styleEl.sheet is null, cannot inject CSS");
-    countClasses.set(key, cls);
-    return cls;
-  }
-  styleEl.sheet.insertRule(
-    `.monaco-editor .${cls}::after { content: "${label}"; opacity: 0.7; margin-left: 4px; }`,
-  );
-  countClasses.set(key, cls);
-  return cls;
 }
 
 interface Props {
@@ -50,6 +35,8 @@ export function AnnotatedJsonView({ value, displayText }: Props) {
   const markersRef = useRef(markers);
   markersRef.current = markers;
 
+  injectStyle();
+
   const updateDecorations = useCallback(() => {
     const ed = editorRef.current;
     if (!ed) return;
@@ -69,7 +56,12 @@ export function AnnotatedJsonView({ value, displayText }: Props) {
           endLineNumber: m.line,
           endColumn: 2,
         },
-        options: { afterContentClassName: countClass(m) },
+        options: {
+          after: {
+            content: `  ${m.count}`,
+            inlineClassName: "fold-count",
+          },
+        },
       });
     }
     decIds.current = ed.deltaDecorations(decIds.current, decs);
