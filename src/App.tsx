@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { TOOLS } from "./tools";
 import { Settings } from "./tools/settings/Settings";
 import { useAppStore } from "./store/app";
 import { useSettingsStore } from "./store/settings";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { CommandPalette } from "./components/CommandPalette";
 import "./App.css";
 
 const SETTINGS_ID = "settings";
@@ -15,8 +16,9 @@ export default function App() {
   const theme = useAppStore((s) => s.theme);
   const toggleTheme = useAppStore((s) => s.toggleTheme);
   const toolOrder = useSettingsStore((s) => s.order);
+  const [cmdOpen, setCmdOpen] = useState(false);
 
-  useKeyboardShortcuts();
+  useKeyboardShortcuts(setCmdOpen);
 
   // 同步主题到根节点，驱动 CSS 变量
   useEffect(() => {
@@ -67,6 +69,7 @@ export default function App() {
           </ErrorBoundary>
         </div>
       </main>
+      <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
     </div>
   );
 }

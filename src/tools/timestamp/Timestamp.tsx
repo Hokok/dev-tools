@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
+import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import "../tool.css";
 
@@ -10,8 +12,9 @@ function pad(n: number): string {
 }
 
 export function Timestamp() {
-  const [tsInput, setTsInput] = useState("");
-  const [dtInput, setDtInput] = useState("");
+  const savedDraft = useAppStore((s) => s.drafts["timestamp"]) as Record<string, unknown> | undefined;
+  const [tsInput, setTsInput] = useState((savedDraft?.tsInput as string) ?? "");
+  const [dtInput, setDtInput] = useState((savedDraft?.dtInput as string) ?? "");
   const addHistory = useHistoryStore((s) => s.addHistory);
 
   useApplyHistory("timestamp", ({ input }) => setTsInput(input ?? ""));
@@ -56,6 +59,8 @@ export function Timestamp() {
       ms: d.getTime(),
     };
   }, [dtInput]);
+
+  useSaveDraft("timestamp", { tsInput, dtInput });
 
   return (
     <div className="tool-page">

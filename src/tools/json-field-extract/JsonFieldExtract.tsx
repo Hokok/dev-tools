@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { JsonEditor } from "../../components/JsonEditor";
 import { JsonOutput } from "../../components/JsonOutput";
+import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import "../tool.css";
@@ -80,9 +82,10 @@ function pick(value: unknown, path: string): unknown {
 }
 
 export function JsonFieldExtract() {
-  const [input, setInput] = useState("");
-  const [paths, setPaths] = useState<string[]>([]);
-  const [custom, setCustom] = useState("");
+  const savedDraft = useAppStore((s) => s.drafts["json-field-extract"]) as Record<string, unknown> | undefined;
+  const [input, setInput] = useState((savedDraft?.input as string) ?? "");
+  const [paths, setPaths] = useState<string[]>((savedDraft?.paths as string[]) ?? []);
+  const [custom, setCustom] = useState((savedDraft?.custom as string) ?? "");
   const [output, setOutput] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -168,6 +171,8 @@ export function JsonFieldExtract() {
       setError(e instanceof Error ? e.message : String(e));
     }
   }, [output]);
+
+  useSaveDraft("json-field-extract", { input, paths, custom });
 
   return (
     <div className="tool-page">

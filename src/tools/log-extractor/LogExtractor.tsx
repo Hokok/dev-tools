@@ -4,6 +4,7 @@ import { JsonEditor } from "../../components/JsonEditor";
 import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { ToolHistory } from "../../components/ToolHistory";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import { AnnotatedJsonView } from "../../components/AnnotatedJsonView";
 import type { JsonMatch } from "../../types";
@@ -15,7 +16,8 @@ function errMsg(e: unknown): string {
 }
 
 export function LogExtractor() {
-  const [input, setInput] = useState("");
+  const savedDraft = useAppStore((s) => s.drafts["log-extractor"]) as Record<string, unknown> | undefined;
+  const [input, setInput] = useState((savedDraft?.input as string) ?? "");
   const [matches, setMatches] = useState<JsonMatch[]>([]);
   const [selected, setSelected] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +91,8 @@ export function LogExtractor() {
 
   // 选中的命中：selected 越界时钳制到最后一个
   const activeMatch = matches[Math.min(selected, matches.length - 1)];
+
+  useSaveDraft("log-extractor", { input });
 
   return (
     <div className="tool-page">

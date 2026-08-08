@@ -1,13 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { JsonEditor } from "../../components/JsonEditor";
+import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { ALL_ALGORITHMS, computeAll, type HashAlgorithm } from "../../utils/hash";
 import "../tool.css";
 
 export function Hash() {
-  const [input, setInput] = useState("");
-  const [selected, setSelected] = useState<HashAlgorithm[]>(() => [...ALL_ALGORITHMS]);
+  const savedDraft = useAppStore((s) => s.drafts["hash"]) as Record<string, unknown> | undefined;
+  const [input, setInput] = useState((savedDraft?.input as string) ?? "");
+  const [selected, setSelected] = useState<HashAlgorithm[]>(
+    () => (savedDraft?.selected as HashAlgorithm[]) ?? [...ALL_ALGORITHMS],
+  );
   const [results, setResults] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -84,6 +89,8 @@ export function Hash() {
       .map(([k, v]) => `${k}: ${v}`)
       .join("\n");
   }, [results]);
+
+  useSaveDraft("hash", { input, selected });
 
   return (
     <div className="tool-page">

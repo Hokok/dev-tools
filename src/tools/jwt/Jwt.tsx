@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { JsonEditor } from "../../components/JsonEditor";
 import { AnnotatedJsonView } from "../../components/AnnotatedJsonView";
+import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { base64UrlDecode } from "../../utils/base64url";
 import "../tool.css";
@@ -34,7 +36,8 @@ function fmtTime(ts: number): string {
 }
 
 export function Jwt() {
-  const [token, setToken] = useState("");
+  const savedDraft = useAppStore((s) => s.drafts["jwt"]) as Record<string, unknown> | undefined;
+  const [token, setToken] = useState((savedDraft?.token as string) ?? "");
   const [error, setError] = useState<string | null>(null);
   const addHistory = useHistoryStore((s) => s.addHistory);
 
@@ -98,6 +101,8 @@ export function Jwt() {
       payload: { token },
     });
   };
+
+  useSaveDraft("jwt", { token });
 
   return (
     <div className="tool-page">

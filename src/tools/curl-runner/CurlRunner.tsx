@@ -2,7 +2,9 @@ import { useCallback, useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { JsonEditor } from "../../components/JsonEditor";
 import { AnnotatedJsonView } from "../../components/AnnotatedJsonView";
+import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import type { HttpResult } from "../../types";
 import "../tool.css";
@@ -16,7 +18,8 @@ function statusClass(status: number): string {
 }
 
 export function CurlRunner() {
-  const [input, setInput] = useState("");
+  const savedDraft = useAppStore((s) => s.drafts["curl-runner"]) as Record<string, unknown> | undefined;
+  const [input, setInput] = useState((savedDraft?.input as string) ?? "");
   const [result, setResult] = useState<HttpResult | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -55,6 +58,8 @@ export function CurlRunner() {
       return { rawBody: result.body, raw: true };
     }
   }, [result]);
+
+  useSaveDraft("curl-runner", { input });
 
   return (
     <div className="tool-page">

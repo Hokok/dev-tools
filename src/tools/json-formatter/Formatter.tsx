@@ -5,6 +5,7 @@ import { JsonOutput } from "../../components/JsonOutput";
 import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useFileDrop } from "../../hooks/useFileDrop";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import type { ParseError } from "../../types";
 import { isParseError } from "../../types";
@@ -22,11 +23,12 @@ function toParseError(e: unknown): ParseError {
 }
 
 export function Formatter() {
-  const [input, setInput] = useState("");
+  const savedDraft = useAppStore((s) => s.drafts["json-formatter"]) as Record<string, unknown> | undefined;
+  const [input, setInput] = useState((savedDraft?.input as string) ?? "");
   const [output, setOutput] = useState("");
-  const [indent, setIndent] = useState(2);
+  const [indent, setIndent] = useState((savedDraft?.indent as number) ?? 2);
   const [error, setError] = useState<ParseError | null>(null);
-  const [autoRun, setAutoRun] = useState(true);
+  const [autoRun, setAutoRun] = useState((savedDraft?.autoRun as boolean) ?? true);
   const fileRef = useRef<HTMLInputElement>(null);
   const extractedJson = useAppStore((s) => s.extractedJson);
   const setExtractedJson = useAppStore((s) => s.setExtractedJson);
@@ -95,6 +97,8 @@ export function Formatter() {
       setError({ message: `复制失败: ${errMsg(e)}`, line: 1, column: 1 });
     }
   }, [output]);
+
+  useSaveDraft("json-formatter", { input, indent, autoRun });
 
   return (
     <div className="tool-page">

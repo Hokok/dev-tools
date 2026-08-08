@@ -1,6 +1,8 @@
 import { useCallback, useRef, useState } from "react";
 import { JsonEditor } from "../../components/JsonEditor";
+import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import "../tool.css";
@@ -64,7 +66,8 @@ export function toJsonl(rows: Record<string, string>[]): string {
 }
 
 export function JsonTable() {
-  const [input, setInput] = useState("");
+  const savedDraft = useAppStore((s) => s.drafts["json-table"]) as Record<string, unknown> | undefined;
+  const [input, setInput] = useState((savedDraft?.input as string) ?? "");
   const [rows, setRows] = useState<Record<string, string>[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -105,6 +108,8 @@ export function JsonTable() {
     a.click();
     URL.revokeObjectURL(url);
   }, []);
+
+  useSaveDraft("json-table", { input });
 
   return (
     <div className="tool-page">

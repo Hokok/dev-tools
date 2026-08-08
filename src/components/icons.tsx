@@ -144,6 +144,15 @@ const icons: Record<string, ReactNode> = {
         <polyline points="8,13 8,14" />
       </>,
     ),
+
+    IcoG(
+      "image-preview",
+      <>
+        <rect x="2" y="3" width="12" height="10" rx="1" />
+        <circle cx="5.5" cy="6" r="1.5" />
+        <path d="M2 11l3-3 2 2 4-4 3 3" />
+      </>,
+    ),
   ]),
 };
 

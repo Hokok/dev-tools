@@ -7,22 +7,21 @@ function isMod(e: KeyboardEvent): boolean {
   return e.metaKey || e.ctrlKey;
 }
 
-/**
- * 全局快捷键：
- * - Cmd/Ctrl+1..N：切换工具（对应 TOOLS 注册表顺序，最多 9 个）
- * - Cmd/Ctrl+Enter：触发主执行按钮（[data-hotkey="run"]）
- * - Cmd/Ctrl+Shift+C：触发复制按钮（[data-hotkey="copy"]）
- *
- * 用 DOM 查询 + click() 派发，各工具页无需额外注册。
- */
-export function useKeyboardShortcuts(): void {
+export function useKeyboardShortcuts(setCmdOpen: (open: boolean) => void): void {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (!isMod(e) || e.repeat) return;
+      if (e.repeat) return;
+
+      if (isMod(e) && e.key === "p") {
+        e.preventDefault();
+        setCmdOpen(true);
+        return;
+      }
+
+      if (!isMod(e)) return;
 
       if (e.key >= "1" && e.key <= "9") {
         const idx = Number(e.key) - 1;
-        // 快捷键按配置后的可见顺序映射
         const ordered = useSettingsStore
           .getState()
           .order.map((id) => TOOLS.find((t) => t.id === id))
@@ -54,5 +53,5 @@ export function useKeyboardShortcuts(): void {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [setCmdOpen]);
 }

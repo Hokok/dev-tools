@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { JsonEditor } from "../../components/JsonEditor";
+import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import {
   base64Decode,
@@ -24,8 +26,9 @@ const MODES: { id: Mode; label: string }[] = [
 ];
 
 export function EncodeConvert() {
-  const [mode, setMode] = useState<Mode>("b64-enc");
-  const [input, setInput] = useState("");
+  const savedDraft = useAppStore((s) => s.drafts["encode-convert"]) as Record<string, unknown> | undefined;
+  const [mode, setMode] = useState<Mode>((savedDraft?.mode as Mode) ?? "b64-enc");
+  const [input, setInput] = useState((savedDraft?.input as string) ?? "");
   const [error, setError] = useState<string | null>(null);
   const addHistory = useHistoryStore((s) => s.addHistory);
 
@@ -84,6 +87,8 @@ export function EncodeConvert() {
       setError(e instanceof Error ? e.message : String(e));
     }
   };
+
+  useSaveDraft("encode-convert", { input, mode });
 
   return (
     <div className="tool-page">

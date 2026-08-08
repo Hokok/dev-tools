@@ -12,6 +12,7 @@ import { Hash } from "./hash/Hash";
 import { RegexTester } from "./regex-tester/RegexTester";
 import { Jwt } from "./jwt/Jwt";
 import { CurlRunner } from "./curl-runner/CurlRunner";
+import { ImagePreview } from "./image-preview/ImagePreview";
 import { ToolIcon } from "../components/icons";
 
 export interface ToolDef {
@@ -31,6 +32,7 @@ export const TOOLS: ToolDef[] = [
   { id: "json-field-extract", name: "字段提取", icon: <ToolIcon name="json-field-extract" />, component: JsonFieldExtract },
   { id: "history", name: "历史记录", icon: <ToolIcon name="history" />, component: History },
   { id: "curl-runner", name: "Curl 执行", icon: <ToolIcon name="curl-runner" />, component: CurlRunner },
+  { id: "image-preview", name: "图片预览", icon: <ToolIcon name="image-preview" />, component: ImagePreview },
   { id: "encode-convert", name: "编码转换", icon: <ToolIcon name="encode-convert" />, component: EncodeConvert },
   { id: "timestamp", name: "时间戳", icon: <ToolIcon name="timestamp" />, component: Timestamp },
   { id: "hash", name: "Hash 计算", icon: <ToolIcon name="hash" />, component: Hash },

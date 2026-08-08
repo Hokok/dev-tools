@@ -3,7 +3,9 @@ import { invoke } from "@tauri-apps/api/core";
 import type { editor } from "monaco-editor";
 import { JsonEditor } from "../../components/JsonEditor";
 import { TextDiffEditor } from "../../components/TextDiffEditor";
+import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import type { DiffNode, ParseError } from "../../types";
@@ -36,8 +38,9 @@ function lastSegment(path: string): string {
 }
 
 export function JsonDiff() {
-  const [left, setLeft] = useState("");
-  const [right, setRight] = useState("");
+  const savedDraft = useAppStore((s) => s.drafts["json-diff"]) as Record<string, unknown> | undefined;
+  const [left, setLeft] = useState((savedDraft?.left as string) ?? "");
+  const [right, setRight] = useState((savedDraft?.right as string) ?? "");
   const [changes, setChanges] = useState<DiffNode[]>([]);
   const [leftPretty, setLeftPretty] = useState("");
   const [rightPretty, setRightPretty] = useState("");
@@ -115,6 +118,8 @@ export function JsonDiff() {
     const modified = changes.filter((c) => c.change === "modified").length;
     return { added, removed, modified };
   }, [changes]);
+
+  useSaveDraft("json-diff", { left, right });
 
   return (
     <div className="tool-page">

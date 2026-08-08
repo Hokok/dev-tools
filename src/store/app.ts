@@ -10,6 +10,9 @@ interface AppState {
   setExtractedJson: (json: string) => void;
   theme: Theme;
   toggleTheme: () => void;
+  /** 切换工具时的输入草稿，避免切换丢失未保存内容 */
+  drafts: Record<string, unknown>;
+  setDraft: (toolId: string, data: unknown) => void;
 }
 
 const THEME_KEY = "devbox-theme";
@@ -47,4 +50,6 @@ export const useAppStore = create<AppState>((set) => ({
       saveTheme(next);
       return { theme: next };
     }),
+  drafts: {},
+  setDraft: (toolId, data) => set((s) => ({ drafts: { ...s.drafts, [toolId]: data } })),
 }));

@@ -4,6 +4,7 @@ import type { editor } from "monaco-editor";
 import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { ToolHistory } from "../../components/ToolHistory";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import "../tool.css";
 
 interface MatchInfo {
@@ -12,10 +13,21 @@ interface MatchInfo {
   groups: (string | undefined)[];
 }
 
+interface RegexFlags {
+  g: boolean;
+  i: boolean;
+  m: boolean;
+  s: boolean;
+  u: boolean;
+}
+
 export function RegexTester() {
-  const [pattern, setPattern] = useState("");
-  const [flags, setFlags] = useState({ g: true, i: false, m: false, s: false, u: false });
-  const [text, setText] = useState("");
+  const savedDraft = useAppStore((s) => s.drafts["regex-tester"]) as Record<string, unknown> | undefined;
+  const [pattern, setPattern] = useState((savedDraft?.pattern as string) ?? "");
+  const [flags, setFlags] = useState<RegexFlags>(
+    (savedDraft?.flags as RegexFlags) ?? { g: true, i: false, m: false, s: false, u: false },
+  );
+  const [text, setText] = useState((savedDraft?.text as string) ?? "");
   const [error, setError] = useState<string | null>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const theme = useAppStore((s) => s.theme);
@@ -112,6 +124,8 @@ export function RegexTester() {
       payload: { pattern, text },
     });
   };
+
+  useSaveDraft("regex-tester", { pattern, flags, text });
 
   return (
     <div className="tool-page">

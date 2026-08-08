@@ -169,3 +169,74 @@ body,
 .sidebar .spacer {
   flex: 1;
 }
+
+/* 命令面板 */
+.cmd-palette-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  justify-content: center;
+  padding-top: 15vh;
+  z-index: 200;
+}
+
+.cmd-palette {
+  width: 420px;
+  max-height: 320px;
+  background: var(--sidebar-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cmd-palette-input {
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font-size: 14px;
+  padding: 12px 16px;
+  outline: none;
+  border-bottom: 1px solid var(--border);
+}
+
+.cmd-palette-input::placeholder {
+  color: var(--muted);
+}
+
+.cmd-palette-empty {
+  padding: 16px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.cmd-palette-list {
+  overflow: auto;
+  flex: 1;
+  padding: 4px;
+}
+
+.cmd-palette-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--tool-btn-fg);
+  font-size: 13px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cmd-palette-item:hover,
+.cmd-palette-item.active {
+  background: var(--sidebar-active);
+  color: var(--sidebar-active-fg);
+}

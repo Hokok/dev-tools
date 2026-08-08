@@ -1,14 +1,17 @@
 import { useCallback, useRef, useState } from "react";
 import { JsonEditor } from "../../components/JsonEditor";
 import { TextDiffEditor } from "../../components/TextDiffEditor";
+import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
+import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import "../tool.css";
 
 export function TextDiff() {
-  const [left, setLeft] = useState("");
-  const [right, setRight] = useState("");
+  const savedDraft = useAppStore((s) => s.drafts["text-diff"]) as Record<string, unknown> | undefined;
+  const [left, setLeft] = useState((savedDraft?.left as string) ?? "");
+  const [right, setRight] = useState((savedDraft?.right as string) ?? "");
   const [showDiff, setShowDiff] = useState(false);
   const leftFileRef = useRef<HTMLInputElement>(null);
   const rightFileRef = useRef<HTMLInputElement>(null);
@@ -39,6 +42,8 @@ export function TextDiff() {
 
   const leftDrop = useFileDrop({ onFile: loadLeft });
   const rightDrop = useFileDrop({ onFile: loadRight });
+
+  useSaveDraft("text-diff", { left, right });
 
   return (
     <div className="tool-page">
