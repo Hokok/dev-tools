@@ -171,15 +171,15 @@ export function JsonFieldExtract() {
   return (
     <div className="tool-page">
       <div className="toolbar">
-        <button onClick={extract} disabled={paths.length === 0}>
+        <button className="btn btn-primary" onClick={extract} disabled={paths.length === 0}>
           提取字段
         </button>
-        <button onClick={copy} disabled={!output}>
+        <button className="btn" onClick={copy} disabled={!output}>
           复制结果
         </button>
         <span className="hint">已选 {paths.length} 个字段</span>
         <span className="spacer" />
-        <button onClick={() => fileRef.current?.click()}>打开文件</button>
+        <button className="btn" onClick={() => fileRef.current?.click()}>打开文件</button>
         <input
           ref={fileRef}
           type="file"
@@ -214,7 +214,7 @@ export function JsonFieldExtract() {
             }}
             placeholder="自定义路径（如 a.b.c），回车添加"
           />
-          <button onClick={addCustom} disabled={!custom.trim()}>
+          <button className="btn btn-sm" onClick={addCustom} disabled={!custom.trim()}>
             添加
           </button>
         </div>

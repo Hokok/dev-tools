@@ -119,15 +119,15 @@ export function JsonDiff() {
   return (
     <div className="tool-page">
       <div className="toolbar">
-        <button data-hotkey="run" onClick={compare}>
+        <button className="btn btn-primary" data-hotkey="run" onClick={compare}>
           比对
         </button>
         <span className="hint">
           变更 {changes.length}（新增 {summary.added} / 删除 {summary.removed} / 修改 {summary.modified}）
         </span>
         <span className="spacer" />
-        <button onClick={() => leftFileRef.current?.click()}>打开左值文件</button>
-        <button onClick={() => rightFileRef.current?.click()}>打开右值文件</button>
+        <button className="btn" onClick={() => leftFileRef.current?.click()}>打开左值文件</button>
+        <button className="btn" onClick={() => rightFileRef.current?.click()}>打开右值文件</button>
         <input
           ref={leftFileRef}
           type="file"

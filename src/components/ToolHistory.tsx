@@ -48,11 +48,7 @@ export function ToolHistory({ toolId, emptyText = "暂无该工具的历史记�
 
   return (
     <div className="tool-history" ref={rootRef}>
-      <button
-        className="tool-history-btn"
-        onClick={() => setOpen((v) => !v)}
-        title="查看该工具的历史记录"
-      >
+      <button className="tool-history-btn btn" onClick={() => setOpen((v) => !v)} title="查看该工具的历史记录">
         🕘 历史
         {toolItems.length > 0 && <span className="tool-history-count">{toolItems.length}</span>}
       </button>
@@ -72,8 +68,12 @@ export function ToolHistory({ toolId, emptyText = "暂无该工具的历史记�
                     {item.preview || "（空输入）"}
                   </div>
                   <div className="tool-history-actions">
-                    <button onClick={() => load(item)}>加载</button>
-                    <button onClick={() => removeItem(item.id)}>删除</button>
+                    <button className="btn btn-sm" onClick={() => load(item)}>
+                      加载
+                    </button>
+                    <button className="btn btn-sm btn-danger" onClick={() => removeItem(item.id)}>
+                      删除
+                    </button>
                   </div>
                 </div>
               ))}

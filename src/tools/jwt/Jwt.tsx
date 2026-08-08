@@ -101,11 +101,11 @@ export function Jwt() {
   return (
     <div className="tool-page">
       <div className="toolbar">
-        <button data-hotkey="run" onClick={record} disabled={!token.trim()}>
+        <button className="btn" data-hotkey="run" onClick={record} disabled={!token.trim()}>
           记录
         </button>
         <span className="spacer" />
-        <button onClick={() => setToken("")}>清空</button>
+        <button className="btn" onClick={() => setToken("")}>清空</button>
         <ToolHistory toolId="jwt" />
       </div>
       {error && <div className="error-box">{error}</div>}

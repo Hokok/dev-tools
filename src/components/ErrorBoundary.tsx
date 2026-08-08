@@ -30,8 +30,11 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBound
         <div className="tool-page">
           <div className="error-box">渲染出错了: {this.state.message}</div>
           <div className="toolbar">
-            <button onClick={this.handleReload}>重试</button>
+            <button className="btn btn-primary" onClick={this.handleReload}>
+              重试
+            </button>
             <button
+              className="btn"
               onClick={() => {
                 window.location.reload();
               }}

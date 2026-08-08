@@ -104,14 +104,14 @@ export function EncodeConvert() {
             ))}
           </select>
         </label>
-        <button onClick={record} disabled={!input}>
+        <button className="btn" onClick={record} disabled={!input}>
           记录
         </button>
-        <button data-hotkey="copy" onClick={copy} disabled={!output}>
+        <button className="btn" data-hotkey="copy" onClick={copy} disabled={!output}>
           复制结果
         </button>
         <span className="spacer" />
-        <button onClick={() => setInput("")}>清空</button>
+        <button className="btn" onClick={() => setInput("")}>清空</button>
         <ToolHistory toolId="encode-convert" />
       </div>
       {error && <div className="error-box">{error}</div>}

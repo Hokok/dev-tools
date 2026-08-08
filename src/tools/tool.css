@@ -17,11 +17,70 @@
   flex-wrap: wrap;
 }
 
-.toolbar button,
 .toolbar select,
 .toolbar label {
   font-size: 13px;
-  padding: 4px 10px;
+  padding: 4px 12px;
+}
+
+/* 统一按钮体系：.btn 基类 + 变体，颜色取自 App.css 主题变量 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  padding: 4px 12px;
+  border: 1px solid var(--btn-border);
+  border-radius: 5px;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--btn-bg-hover);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.btn-primary {
+  background: var(--btn-primary-bg);
+  border-color: transparent;
+  color: var(--btn-primary-fg);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--btn-primary-bg-hover);
+}
+
+.btn-danger {
+  background: var(--btn-danger-bg);
+  border-color: var(--error-border);
+  color: var(--btn-danger-fg);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--btn-danger-bg-hover);
+}
+
+.btn-sm {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .spacer {

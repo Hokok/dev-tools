@@ -67,7 +67,7 @@ export function Timestamp() {
           onChange={(e) => setTsInput(e.target.value)}
           placeholder="例如 1723084800000 或 1723084800"
         />
-        <button onClick={record} disabled={!tsInput.trim()}>
+        <button className="btn" onClick={record} disabled={!tsInput.trim()}>
           记录
         </button>
         <span className="spacer" />
