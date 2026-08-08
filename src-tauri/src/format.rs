@@ -23,9 +23,11 @@ pub fn minify_json(input: &str) -> Result<String, ParseError> {
 }
 
 /// 反转义并格式化 JSON 字符串：输入为转义后的 JSON 文本（如 `{\"a\":1}`），
-/// 先解除转义再格式化为美化 JSON。
+/// 先解除转义再格式化为美化 JSON。支持多行（含字面换行符）。
 pub fn unescape_json(input: &str) -> Result<String, ParseError> {
-    let quoted = format!("\"{}\"", input);
+    // 字面换行符在 JSON 字符串中必须转义为 \n/\r，否则 serde_json 拒绝解析
+    let escaped = input.replace("\r\n", "\\n").replace('\r', "\\r").replace('\n', "\\n");
+    let quoted = format!("\"{}\"", escaped);
     let unescaped: String = serde_json::from_str(&quoted).map_err(to_parse_error)?;
     let v: Value = serde_json::from_str(&unescaped).map_err(to_parse_error)?;
     serde_json::to_string_pretty(&v).map_err(|e| serr(&e.to_string()))
@@ -131,5 +133,17 @@ mod tests {
         let out = unescape_json(input).unwrap();
         assert!(out.contains("\"a\": 1"));
         assert!(out.contains("\"c\": ["));
+    }
+
+    #[test]
+    fn unescape_multiline_escaped_json() {
+        // 多行转义 JSON，含字面换行符和 \" 转义引号
+        let input = r#"{
+  \"code\": 0,
+  \"msg\": \"success\"
+}"#;
+        let out = unescape_json(input).unwrap();
+        assert!(out.contains("\"code\": 0"));
+        assert!(out.contains("\"msg\": \"success\""));
     }
 }
