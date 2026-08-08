@@ -84,11 +84,11 @@ export function CurlRunner() {
 
       {result && view && (
         <div className="split-view" style={{ flex: 1 }}>
-          <div className="pane">
+          <div className="pane" style={{ flex: 2 }}>
             <div className="pane-title">响应体{view.language === "json" ? "（JSON）" : ""}</div>
             <JsonEditor value={view.text} readOnly language={view.language} />
           </div>
-          <div className="pane">
+          <div className="pane" style={{ flex: 1 }}>
             <div className="pane-title">
               <span className={`badge ${statusClass(result.status)}`}>
                 {result.status} {result.status_text}
