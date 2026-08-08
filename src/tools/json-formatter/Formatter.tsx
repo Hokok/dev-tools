@@ -11,6 +11,13 @@ import type { ParseError } from "../../types";
 import { isParseError } from "../../types";
 import "../tool.css";
 
+/** 前端反转义 JSON 字符串：将转义后的 JSON 文本解码为格式化 JSON */
+function unescapeJson(input: string): string {
+  const escaped = input.replace(/\r\n/g, "\\n").replace(/\r/g, "\\r").replace(/\n/g, "\\n");
+  const unescaped: string = JSON.parse('"' + escaped + '"');
+  return JSON.stringify(JSON.parse(unescaped), null, 2);
+}
+
 /** invoke reject 可能是字符串或 Error，统一提取消息 */
 function errMsg(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
@@ -50,21 +57,19 @@ export function Formatter() {
   }, [extractedJson, indent, setExtractedJson]);
 
   const run = useCallback(
-    async (mode: "format" | "minify" | "unescape") => {
+    async (mode: "format" | "minify") => {
       if (!input.trim()) return;
       setError(null);
       try {
         const result =
           mode === "format"
             ? await invoke<string>("fmt_json", { input, indent })
-            : mode === "minify"
-              ? await invoke<string>("min_json", { input })
-              : await invoke<string>("fmt_unescape", { input });
+            : await invoke<string>("min_json", { input });
         setOutput(result);
         addHistory({
           toolId: "json-formatter",
           toolName: "JSON 格式化",
-          action: mode === "format" ? "格式化" : mode === "minify" ? "压缩" : "去转义",
+          action: mode === "format" ? "格式化" : "压缩",
           payload: { input },
         });
       } catch (e) {
@@ -73,6 +78,23 @@ export function Formatter() {
     },
     [input, indent],
   );
+
+  const handleUnescape = useCallback(() => {
+    if (!input.trim()) return;
+    setError(null);
+    try {
+      const result = unescapeJson(input);
+      setInput(result);
+      addHistory({
+        toolId: "json-formatter",
+        toolName: "JSON 格式化",
+        action: "去转义",
+        payload: { input },
+      });
+    } catch (e) {
+      setError(toParseError(e));
+    }
+  }, [input, addHistory]);
 
   // 粘贴后自动格式化（debounce 600ms，autoRun 关闭时跳过）
   useEffect(() => {
@@ -109,7 +131,7 @@ export function Formatter() {
           格式化
         </button>
         <button className="btn" onClick={() => run("minify")}>压缩</button>
-        <button className="btn" onClick={() => run("unescape")}>去转义</button>
+        <button className="btn" onClick={handleUnescape}>去转义</button>
         <label>
           缩进
           <select value={indent} onChange={(e) => setIndent(Number(e.target.value))}>
