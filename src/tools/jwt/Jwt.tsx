@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { JsonEditor } from "../../components/JsonEditor";
+import { AnnotatedJsonView } from "../../components/AnnotatedJsonView";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { ToolHistory } from "../../components/ToolHistory";
 import { base64UrlDecode } from "../../utils/base64url";
@@ -145,11 +146,19 @@ export function Jwt() {
       <div className="split-view" style={{ flex: 2 }}>
         <div className="pane">
           <div className="pane-title">Header</div>
-          <JsonEditor value={parsed && !("error" in parsed) ? JSON.stringify(parsed.header, null, 2) : ""} readOnly />
+          {parsed && !("error" in parsed) ? (
+            <AnnotatedJsonView value={parsed.header} />
+          ) : (
+            <JsonEditor value="" readOnly />
+          )}
         </div>
         <div className="pane">
           <div className="pane-title">Payload</div>
-          <JsonEditor value={parsed && !("error" in parsed) ? JSON.stringify(parsed.payload, null, 2) : ""} readOnly />
+          {parsed && !("error" in parsed) ? (
+            <AnnotatedJsonView value={parsed.payload} />
+          ) : (
+            <JsonEditor value="" readOnly />
+          )}
         </div>
       </div>
     </div>

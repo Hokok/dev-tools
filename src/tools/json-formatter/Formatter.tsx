@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { JsonEditor } from "../../components/JsonEditor";
+import { JsonOutput } from "../../components/JsonOutput";
 import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -141,7 +142,7 @@ export function Formatter() {
         </div>
         <div className="pane">
           <div className="pane-title">输出</div>
-          <JsonEditor value={output} readOnly />
+          <JsonOutput value={output} />
         </div>
       </div>
     </div>

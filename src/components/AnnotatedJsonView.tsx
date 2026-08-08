@@ -2,35 +2,40 @@ import { useEffect, useMemo, useRef } from "react";
 import type { editor } from "monaco-editor";
 import type { OnMount } from "@monaco-editor/react";
 import { JsonEditor } from "./JsonEditor";
-import { annotatedJson } from "../utils/arrayMarkers";
+import { annotatedJson, type FoldMarker } from "../utils/arrayMarkers";
 
-// 动态生成每类数量的行尾标注 class：.jt-arr-N::after { content: " [N 项]" }
 let styleEl: HTMLStyleElement | null = null;
-const countClasses = new Map<number, string>();
+const countClasses = new Map<string, string>();
 
-function countClass(count: number): string {
-  const cached = countClasses.get(count);
+function countClass(marker: FoldMarker): string {
+  const key = `${marker.kind}-${marker.count}`;
+  const cached = countClasses.get(key);
   if (cached) return cached;
   if (!styleEl) {
     styleEl = document.createElement("style");
     document.head.appendChild(styleEl);
   }
-  const cls = `jt-arr-${count}`;
+  const cls = `jt-${marker.kind}-${marker.count}`;
+  const label = marker.kind === "array" ? ` [${marker.count} 项]` : ` {${marker.count} 项}`;
   styleEl.sheet?.insertRule(
-    `.monaco-editor .${cls}::after { content: " [${count} 项]"; color: var(--muted); }`,
+    `.monaco-editor .${cls}::after { content: "${label}"; color: var(--muted); }`,
   );
-  countClasses.set(count, cls);
+  countClasses.set(key, cls);
   return cls;
 }
 
 interface Props {
   value: unknown;
+  /** 指定显示文本，不传时由 value 重新序列化生成 */
+  displayText?: string;
 }
 
-/** 只读 JSON 展示：与 JSON 格式化页一致（Monaco），数组开括号行尾用
- *  decoration 标注元素数量，不修改 JSON 文本本身 */
-export function AnnotatedJsonView({ value }: Props) {
-  const { text, markers } = useMemo(() => annotatedJson(value), [value]);
+/** 只读 JSON 展示：数组开头标注 [N 项]，对象标注 {N 项}，不修改 JSON 文本 */
+export function AnnotatedJsonView({ value, displayText }: Props) {
+  const { text, markers } = useMemo(() => {
+    const { text, markers } = annotatedJson(value);
+    return { text: displayText ?? text, markers };
+  }, [value, displayText]);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const decIds = useRef<string[]>([]);
 
@@ -44,7 +49,7 @@ export function AnnotatedJsonView({ value }: Props) {
         endLineNumber: m.line,
         endColumn: 1,
       },
-      options: { afterContentClassName: countClass(m.count) },
+      options: { afterContentClassName: countClass(m) },
     }));
     decIds.current = ed.deltaDecorations(decIds.current, decs);
   };
@@ -54,7 +59,6 @@ export function AnnotatedJsonView({ value }: Props) {
     applyDecorations();
   };
 
-  // 切换命中等导致 markers 变化时重新应用标注
   useEffect(applyDecorations, [markers]);
 
   return <JsonEditor value={text} readOnly onMount={handleMount} />;

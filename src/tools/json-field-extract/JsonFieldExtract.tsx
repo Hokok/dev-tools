@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { JsonEditor } from "../../components/JsonEditor";
+import { JsonOutput } from "../../components/JsonOutput";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -228,7 +229,7 @@ export function JsonFieldExtract() {
         </div>
         <div className="pane">
           <div className="pane-title">提取结果</div>
-          <JsonEditor value={output ?? ""} readOnly />
+          <JsonOutput value={output ?? ""} />
         </div>
       </div>
     </div>
