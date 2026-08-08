@@ -77,8 +77,17 @@ export function CurlRunner() {
       </div>
       {runError && <div className="error-box">执行失败: {runError}</div>}
 
-      <div className="split-view" style={{ flex: 1 }}>
-        {result && view && (
+      <div className="pane" style={{ flex: 1 }}>
+        <div className="pane-title">curl 脚本</div>
+        <JsonEditor value={input} onChange={setInput} language="text" />
+      </div>
+
+      {result && view && (
+        <div className="split-view" style={{ flex: 1 }}>
+          <div className="pane">
+            <div className="pane-title">响应体{view.language === "json" ? "（JSON）" : ""}</div>
+            <JsonEditor value={view.text} readOnly language={view.language} />
+          </div>
           <div className="pane">
             <div className="pane-title">
               <span className={`badge ${statusClass(result.status)}`}>
@@ -86,7 +95,7 @@ export function CurlRunner() {
               </span>
               <span className="hint"> {result.duration_ms} ms</span>
             </div>
-            <div style={{ overflow: "auto", flexShrink: 0, maxHeight: "30%" }}>
+            <div className="resp-headers">
               {result.headers.map(([k, v], i) => (
                 <div key={i} className="kv-item">
                   <span className="kv-key">{k}</span>
@@ -94,15 +103,9 @@ export function CurlRunner() {
                 </div>
               ))}
             </div>
-            <div className="pane-title" style={{ marginTop: 8 }}>响应体{view.language === "json" ? "（JSON）" : ""}</div>
-            <JsonEditor value={view.text} readOnly language={view.language} />
           </div>
-        )}
-        <div className="pane">
-          <div className="pane-title">curl 脚本</div>
-          <JsonEditor value={input} onChange={setInput} language="text" />
         </div>
-      </div>
+      )}
     </div>
   );
 }
