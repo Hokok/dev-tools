@@ -1,7 +1,7 @@
 use crate::curl::{HttpResult, run_curl_script};
 use crate::diff::{DiffNode, diff_json};
 use crate::extract::{JsonMatch, extract_json};
-use crate::format::{ParseError, format_json, minify_json};
+use crate::format::{ParseError, format_json, minify_json, unescape_json};
 use serde_json::Value;
 
 /// 格式化 JSON 文本（缩进美化）
@@ -16,6 +16,12 @@ pub async fn fmt_json(input: String, indent: usize) -> Result<String, ParseError
 #[tauri::command]
 pub async fn min_json(input: String) -> Result<String, ParseError> {
     minify_json(&input)
+}
+
+/// 反转义并格式化 JSON 字符串
+#[tauri::command]
+pub async fn fmt_unescape(input: String) -> Result<String, ParseError> {
+    unescape_json(&input)
 }
 
 /// 从日志文本中提取 JSON 片段
