@@ -47,14 +47,16 @@ export function AnnotatedJsonView({ value, displayText }: Props) {
   }, [value, displayText]);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const decIds = useRef<string[]>([]);
+  const markersRef = useRef(markers);
+  markersRef.current = markers;
 
-  const applyFoldedDecorations = useCallback(() => {
+  const updateDecorations = useCallback(() => {
     const ed = editorRef.current;
     if (!ed) return;
 
     const visible = ed.getVisibleRanges();
     const decs: editor.IModelDeltaDecoration[] = [];
-    for (const m of markers) {
+    for (const m of markersRef.current) {
       const nextLine = m.line + 1;
       const nextVisible = visible.some(
         (r) => r.startLineNumber <= nextLine && nextLine <= r.endLineNumber,
@@ -71,21 +73,25 @@ export function AnnotatedJsonView({ value, displayText }: Props) {
       });
     }
     decIds.current = ed.deltaDecorations(decIds.current, decs);
-  }, [markers]);
-
-  const handleMount: OnMount = useCallback((ed) => {
-    editorRef.current = ed;
   }, []);
 
+  const handleMount: OnMount = useCallback(
+    (ed) => {
+      editorRef.current = ed;
+
+      updateDecorations();
+      const disposable = ed.onDidChangeHiddenAreas(() => {
+        // ponytail: setTimeout to let Monaco update visible ranges after fold
+        setTimeout(() => updateDecorations(), 0);
+      });
+      ed.onDidDispose(() => disposable.dispose());
+    },
+    [updateDecorations],
+  );
+
   useEffect(() => {
-    const ed = editorRef.current;
-    if (!ed) return;
-    applyFoldedDecorations();
-    const disposable = ed.onDidChangeHiddenAreas(() => {
-      applyFoldedDecorations();
-    });
-    return () => disposable.dispose();
-  }, [applyFoldedDecorations]);
+    updateDecorations();
+  }, [markers, updateDecorations]);
 
   return <JsonEditor value={text} readOnly onMount={handleMount} />;
 }
