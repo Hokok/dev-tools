@@ -116,4 +116,20 @@ mod tests {
         let err = format_json("{\"a\":1}x", 2).unwrap_err();
         assert_eq!(err.column, 8);
     }
+
+    #[test]
+    fn unescape_escaped_json() {
+        // 输入为转义 JSON 字符串 {\"a\":1}，serde_json 应正确解除转义
+        let input = r#"{\"a\":1}"#;
+        let out = unescape_json(input).unwrap();
+        assert_eq!(out, "{\n  \"a\": 1\n}");
+    }
+
+    #[test]
+    fn unescape_nested_escaped_json() {
+        let input = r#"{\"a\":1,\"b\":{\"c\":[1,2]}}"#;
+        let out = unescape_json(input).unwrap();
+        assert!(out.contains("\"a\": 1"));
+        assert!(out.contains("\"c\": ["));
+    }
 }

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { TOOLS } from "../index";
 import { useSettingsStore } from "../../store/settings";
 import "../tool.css";
@@ -9,47 +9,57 @@ export function Settings() {
   const setEnabled = useSettingsStore((s) => s.setEnabled);
   const reorder = useSettingsStore((s) => s.reorder);
   const reset = useSettingsStore((s) => s.reset);
-  const dragIdxRef = useRef<number | null>(null);
+  const [dragging, setDragging] = useState(false);
   const [overIdx, setOverIdx] = useState<number | null>(null);
+  const dragFromRef = useRef<number | null>(null);
+  const overIdxRef = useRef<number | null>(null);
 
   // 已启用按配置顺序在前，未启用的工具排后供勾选
   const enabled = order.map((id) => TOOLS.find((t) => t.id === id)!).filter(Boolean);
   const disabled = TOOLS.filter((t) => !order.includes(t.id));
   const items = [...enabled, ...disabled];
 
-  const handleDragStart = (e: React.DragEvent, orderIdx: number) => {
-    dragIdxRef.current = orderIdx;
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", String(orderIdx));
-  };
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (dragFromRef.current === null) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+    const item = el?.closest<HTMLElement>("[data-order-idx]");
+    const idx = item ? Number(item.dataset.orderIdx) : -1;
+    const next = idx >= 0 ? idx : null;
+    overIdxRef.current = next;
+    setOverIdx(next);
+  }, []);
 
-  const handleDragOver = (e: React.DragEvent, orderIdx: number) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    setOverIdx(orderIdx);
-  };
-
-  const handleDragLeave = () => {
+  const handleMouseUp = useCallback(() => {
+    const from = dragFromRef.current;
+    const to = overIdxRef.current;
+    dragFromRef.current = null;
+    overIdxRef.current = null;
+    setDragging(false);
     setOverIdx(null);
-  };
-
-  const handleDrop = (e: React.DragEvent, toIdx: number) => {
-    e.preventDefault();
-    const fromIdx = dragIdxRef.current;
-    if (fromIdx === null || fromIdx === toIdx) {
-      dragIdxRef.current = null;
-      setOverIdx(null);
-      return;
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+    document.body.style.userSelect = "";
+    if (from !== null && to !== null && from !== to) {
+      reorder(from, to);
     }
-    reorder(fromIdx, toIdx);
-    dragIdxRef.current = null;
-    setOverIdx(null);
-  };
+  }, [handleMouseMove, reorder]);
 
-  const handleDragEnd = () => {
-    dragIdxRef.current = null;
-    setOverIdx(null);
-  };
+  const handleMouseDown = useCallback((e: React.MouseEvent, orderIdx: number) => {
+    e.preventDefault();
+    dragFromRef.current = orderIdx;
+    setDragging(true);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+    document.body.style.userSelect = "none";
+  }, [handleMouseMove, handleMouseUp]);
+
+  useEffect(() => {
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.body.style.userSelect = "";
+    };
+  }, [handleMouseMove, handleMouseUp]);
 
   return (
     <div className="tool-page">
@@ -64,26 +74,19 @@ export function Settings() {
         {items.map((tool) => {
           const orderIdx = order.indexOf(tool.id);
           const isEnabled = orderIdx >= 0;
-          const isDragging = dragIdxRef.current === orderIdx;
+          const isDragging = dragging && dragFromRef.current === orderIdx;
           return (
             <div
               key={tool.id}
-              className={`settings-item${isDragging ? " dragging" : ""}${overIdx === orderIdx && dragIdxRef.current !== orderIdx ? " drag-over" : ""}`}
-              draggable={isEnabled}
-              onDragStart={(e) => {
-                if (isEnabled) handleDragStart(e, orderIdx);
-              }}
-              onDragOver={(e) => {
-                if (isEnabled) handleDragOver(e, orderIdx);
-              }}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => {
-                if (isEnabled) handleDrop(e, orderIdx);
-              }}
-              onDragEnd={handleDragEnd}
+              data-order-idx={isEnabled ? orderIdx : undefined}
+              className={`settings-item${isDragging ? " dragging" : ""}${overIdx === orderIdx && !isDragging ? " drag-over" : ""}`}
             >
               {isEnabled && (
-                <span className="drag-handle" title="拖拽排序">
+                <span
+                  className="drag-handle"
+                  title="拖拽排序"
+                  onMouseDown={(e) => handleMouseDown(e, orderIdx)}
+                >
                   ⋮⋮
                 </span>
               )}
