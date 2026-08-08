@@ -8,10 +8,11 @@ interface ToolSettingsState {
   order: string[];
   setEnabled: (id: string, enabled: boolean) => void;
   move: (id: string, dir: -1 | 1) => void;
+  reorder: (fromIdx: number, toIdx: number) => void;
   reset: () => void;
 }
 
-/// 防御性清理持久化顺序：过滤未知 id、去重，并补入缺失的新工具
+/// 防御性清理持久化顺序：过滤未知 id、去重，补入缺失的新工具，并确保历史记录在末位
 function sanitize(raw: unknown): string[] {
   const list: string[] = [];
   if (Array.isArray(raw)) {
@@ -22,11 +23,23 @@ function sanitize(raw: unknown): string[] {
     }
   }
   for (const t of TOOLS) if (!list.includes(t.id)) list.push(t.id);
+  const hi = list.indexOf("history");
+  if (hi >= 0) {
+    list.splice(hi, 1);
+    list.push("history");
+  }
   return list;
 }
 
+/// 默认顺序：历史记录始终在末位
 function defaultOrder(): string[] {
-  return TOOLS.map((t) => t.id);
+  const ids = TOOLS.map((t) => t.id);
+  const hi = ids.indexOf("history");
+  if (hi >= 0) {
+    ids.splice(hi, 1);
+    ids.push("history");
+  }
+  return ids;
 }
 
 function readOrder(): string[] {
@@ -73,6 +86,18 @@ export const useSettingsStore = create<ToolSettingsState>((set) => ({
       const b = order[j]!;
       order[i] = b;
       order[j] = a;
+      saveOrder(order);
+      return { order };
+    }),
+
+  reorder: (fromIdx, toIdx) =>
+    set((s) => {
+      if (fromIdx < 0 || fromIdx >= s.order.length) return s;
+      if (toIdx < 0 || toIdx >= s.order.length) return s;
+      if (fromIdx === toIdx) return s;
+      const order = [...s.order];
+      const [removed] = order.splice(fromIdx, 1);
+      order.splice(toIdx, 0, removed!);
       saveOrder(order);
       return { order };
     }),
