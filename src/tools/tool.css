@@ -338,6 +338,29 @@
   font-size: 13px;
 }
 
+.drag-handle {
+  cursor: grab;
+  color: var(--muted);
+  font-size: 14px;
+  letter-spacing: -2px;
+  user-select: none;
+  line-height: 1;
+  padding: 2px 0;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.settings-item.dragging {
+  opacity: 0.4;
+}
+
+.settings-item.drag-over {
+  border-color: var(--accent);
+  background: var(--sidebar-hover);
+}
+
 /* 新工具通用表单/列表样式 */
 .text-input {
   flex: 1;
