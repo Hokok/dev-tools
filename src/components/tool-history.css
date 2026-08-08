@@ -1,0 +1,80 @@
+/* ToolHistory 下拉组件样式（颜色沿用 App.css 主题变量） */
+
+.tool-history {
+  position: relative;
+  display: inline-flex;
+}
+
+.tool-history-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tool-history-count {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  padding: 0 6px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.tool-history-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 50;
+  width: 320px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: var(--bg);
+  border: 1px solid var(--sidebar-border);
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tool-history-empty {
+  padding: 12px 8px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.tool-history-item {
+  border: 1px solid var(--sidebar-border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tool-history-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tool-history-preview {
+  font-size: 12px;
+  font-family: ui-monospace, monospace;
+  color: var(--tool-btn-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-history-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.tool-history-actions button {
+  font-size: 12px;
+  padding: 2px 8px;
+}

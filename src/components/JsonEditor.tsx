@@ -1,6 +1,8 @@
+import { useEffect, useRef } from "react";
 import Editor, { type OnMount } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { useAppStore } from "../store/app";
+import type { ParseError } from "../types";
 
 export const editorOptions: editor.IStandaloneEditorConstructionOptions = {
   minimap: { enabled: false },
@@ -18,6 +20,8 @@ interface JsonEditorProps {
   height?: number | string;
   onMount?: OnMount;
   language?: string;
+  /** 解析错误：非空时自动定位光标到出错行列 */
+  error?: ParseError | null;
 }
 
 /** 统一封装的 Monaco 编辑器（默认 JSON），主题跟随全局设置 */
@@ -28,8 +32,26 @@ export function JsonEditor({
   height = "100%",
   onMount,
   language = "json",
+  error,
 }: JsonEditorProps) {
   const theme = useAppStore((s) => s.theme);
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+
+  const handleMount: OnMount = (ed, monaco) => {
+    editorRef.current = ed;
+    onMount?.(ed, monaco);
+  };
+
+  // 解析错误时定位光标到出错行列
+  useEffect(() => {
+    const ed = editorRef.current;
+    if (!ed || !error) return;
+    const line = Math.max(1, error.line);
+    const col = Math.max(1, error.column);
+    ed.revealPositionInCenter({ lineNumber: line, column: col }, 0);
+    ed.setPosition({ lineNumber: line, column: col });
+    ed.focus();
+  }, [error]);
 
   return (
     <Editor
@@ -38,7 +60,7 @@ export function JsonEditor({
       theme={theme === "dark" ? "vs-dark" : "light"}
       value={value}
       onChange={(v) => onChange?.(v ?? "")}
-      onMount={onMount}
+      onMount={handleMount}
       options={{
         ...editorOptions,
         readOnly: readOnly ?? false,

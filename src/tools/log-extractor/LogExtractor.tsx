@@ -1,8 +1,12 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { JsonEditor } from "../../components/JsonEditor";
-import type { JsonMatch } from "../../types";
 import { useAppStore } from "../../store/app";
+import { useApplyHistory, useHistoryStore } from "../../store/history";
+import { ToolHistory } from "../../components/ToolHistory";
+import { useFileDrop } from "../../hooks/useFileDrop";
+import { AnnotatedJsonView } from "../../components/AnnotatedJsonView";
+import type { JsonMatch } from "../../types";
 import "../tool.css";
 
 /** invoke reject 可能是字符串或 Error，统一提取消息 */
@@ -13,10 +17,15 @@ function errMsg(e: unknown): string {
 export function LogExtractor() {
   const [input, setInput] = useState("");
   const [matches, setMatches] = useState<JsonMatch[]>([]);
+  const [selected, setSelected] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const setActiveTool = useAppStore((s) => s.setActiveTool);
+  const addHistory = useHistoryStore((s) => s.addHistory);
   const setExtractedJson = useAppStore((s) => s.setExtractedJson);
+  const setActiveTool = useAppStore((s) => s.setActiveTool);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // 历史「加载」回填输入
+  useApplyHistory("log-extractor", ({ input }) => setInput(input ?? ""));
 
   const extract = useCallback(async () => {
     if (!input.trim()) return;
@@ -24,31 +33,72 @@ export function LogExtractor() {
     try {
       const result = await invoke<JsonMatch[]>("extract_json_cmd", { input });
       setMatches(result);
+      setSelected(0);
+      // 仅在有命中时记录历史，避免无价值条目堆积
+      if (result.length > 0) {
+        addHistory({
+          toolId: "log-extractor",
+          toolName: "日志提取",
+          action: "提取 JSON",
+          payload: { input },
+        });
+      }
     } catch (e) {
       setError(errMsg(e));
     }
   }, [input]);
 
-  const jumpToFormatter = useCallback(
-    (value: unknown) => {
-      setExtractedJson(JSON.stringify(value, null, 2));
-      setActiveTool("json-formatter");
+  const copyMatch = useCallback(
+    async (m: JsonMatch) => {
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(m.value, null, 2));
+      } catch (e) {
+        setError(errMsg(e));
+      }
     },
-    [setActiveTool, setExtractedJson],
+    [],
   );
 
-  const copy = useCallback(async (value: unknown) => {
+  const copyAll = useCallback(async () => {
+    if (matches.length === 0) return;
     try {
-      await navigator.clipboard.writeText(JSON.stringify(value, null, 2));
+      await navigator.clipboard.writeText(JSON.stringify(matches.map((m) => m.value), null, 2));
     } catch (e) {
       setError(errMsg(e));
     }
+  }, [matches]);
+
+  const formatMatch = useCallback(
+    (m: JsonMatch) => {
+      setExtractedJson(JSON.stringify(m.value));
+      setActiveTool("json-formatter");
+    },
+    [setExtractedJson, setActiveTool],
+  );
+
+  const loadFile = useCallback(async (file: File) => {
+    setInput(await file.text());
   }, []);
+
+  const { bindDrop, isDragging } = useFileDrop({ onFile: loadFile, accept: [".log", ".txt", ".json"] });
+
+  const totalBytes = useMemo(
+    () => matches.reduce((acc, m) => acc + (m.end - m.start), 0),
+    [matches],
+  );
+
+  // 选中的命中：selected 越界时钳制到最后一个
+  const activeMatch = matches[Math.min(selected, matches.length - 1)];
 
   return (
     <div className="tool-page">
       <div className="toolbar">
-        <button onClick={extract}>提取 JSON</button>
+        <button data-hotkey="run" onClick={extract}>
+          提取 JSON
+        </button>
+        <button onClick={copyAll} disabled={matches.length === 0}>
+          复制全部
+        </button>
         <span className="hint">支持转义 JSON（如 {"{\"a\":1}"}）、跨行、日志前缀</span>
         <span className="spacer" />
         <button onClick={() => fileRef.current?.click()}>打开日志文件</button>
@@ -58,33 +108,56 @@ export function LogExtractor() {
           hidden
           onChange={(e) => e.target.files?.[0] && e.target.files[0].text().then(setInput)}
         />
+        <ToolHistory toolId="log-extractor" />
       </div>
       {error && <div className="error-box">{error}</div>}
       <div className="split-view">
         <div className="pane">
           <div className="pane-title">日志输入</div>
-          <JsonEditor value={input} onChange={setInput} language="text" />
+          <div className="drop-zone" {...bindDrop}>
+            <JsonEditor value={input} onChange={setInput} language="text" />
+          </div>
         </div>
         <div className="pane">
-          <div className="pane-title">提取结果（{matches.length}）</div>
+          <div className="pane-title">提取结果（{matches.length}，共 {totalBytes} 字节）</div>
           {matches.length === 0 ? (
-            <div className="hint">点击「提取 JSON」后在此列出命中项</div>
+            <div className="hint">点击「提取 JSON」后在此显示命中列表</div>
           ) : (
-            <div className="match-list">
-              {matches.map((m, i) => (
-                <div key={i} className="match-item">
+            <>
+              {/* 命中选择条：多条命中时切换查看，与格式化页输出一致的整栏预览 */}
+              <div className="match-tabs">
+                {matches.map((m, i) => (
+                  <button
+                    key={i}
+                    className={`match-tab ${i === selected ? "active" : ""}`}
+                    onClick={() => setSelected(i)}
+                    title={m.raw}
+                  >
+                    #{i + 1}
+                  </button>
+                ))}
+              </div>
+              {activeMatch && (
+                <>
                   <div className="match-actions">
-                    <span className="hint">[{m.start}..{m.end}]</span>
-                    <button onClick={() => jumpToFormatter(m.value)}>格式化</button>
-                    <button onClick={() => copy(m.value)}>复制</button>
+                    <span className="hint">
+                      [{activeMatch.start}..{activeMatch.end})
+                    </span>
+                    <span className="spacer" />
+                    <button onClick={() => formatMatch(activeMatch)}>格式化</button>
+                    <button onClick={() => copyMatch(activeMatch)}>复制</button>
                   </div>
-                  <div className="match-preview">{JSON.stringify(m.value, null, 2)}</div>
-                </div>
-              ))}
-            </div>
+                  <div className="match-preview">
+                    {/* 与 JSON 格式化页一致：Monaco 只读展示，数组行尾标注元素数量 */}
+                    <AnnotatedJsonView value={activeMatch.value} />
+                  </div>
+                </>
+              )}
+            </>
           )}
         </div>
       </div>
+      {isDragging && <div className="drop-hint">松开以载入日志文件</div>}
     </div>
   );
 }

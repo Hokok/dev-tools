@@ -25,6 +25,12 @@ export default defineConfig(async () => ({
     ],
   },
 
+  optimizeDeps: {
+    // monaco 的 worker（`?worker` 引入）在 prebundle 阶段会触发
+    // "optimized info should be defined" 错误，排除后作为源码直接加载
+    exclude: ["monaco-editor"],
+  },
+
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent Vite from obscuring rust errors

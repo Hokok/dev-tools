@@ -5,6 +5,17 @@ export interface ParseError {
   column: number;
 }
 
+/** 类型守卫：invoke reject 的 unknown 收窄为 ParseError */
+export function isParseError(e: unknown): e is ParseError {
+  return (
+    typeof e === "object" &&
+    e !== null &&
+    typeof (e as { message?: unknown }).message === "string" &&
+    typeof (e as { line?: unknown }).line === "number" &&
+    typeof (e as { column?: unknown }).column === "number"
+  );
+}
+
 /// 与 Rust 端 JsonMatch 对应的类型
 export interface JsonMatch {
   start: number;
@@ -20,4 +31,13 @@ export interface DiffNode {
   left: unknown | null;
   right: unknown | null;
   children: DiffNode[];
+}
+
+/// 与 Rust 端 HttpResult 对应的类型
+export interface HttpResult {
+  status: number;
+  status_text: string;
+  headers: [string, string][];
+  body: string;
+  duration_ms: number;
 }

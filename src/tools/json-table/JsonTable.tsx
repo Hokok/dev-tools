@@ -1,5 +1,8 @@
 import { useCallback, useRef, useState } from "react";
 import { JsonEditor } from "../../components/JsonEditor";
+import { useApplyHistory, useHistoryStore } from "../../store/history";
+import { ToolHistory } from "../../components/ToolHistory";
+import { useFileDrop } from "../../hooks/useFileDrop";
 import "../tool.css";
 
 /** 递归扁平化对象，嵌套 key 用 `.` 连接，返回表头列 */
@@ -41,7 +44,8 @@ export function toRows(data: unknown): Record<string, string>[] {
 
 export function toCsv(rows: Record<string, string>[]): string {
   if (rows.length === 0) return "";
-  const headers = Object.keys(rows[0]);
+  const first = rows[0] ?? {};
+  const headers = Object.keys(first);
   const escape = (s: string) => {
     // 防止 CSV 公式注入：以 = + - @ 或制表符/回车开头的单元格前缀单引号
     let v = /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
@@ -64,14 +68,30 @@ export function JsonTable() {
   const [rows, setRows] = useState<Record<string, string>[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const addHistory = useHistoryStore((s) => s.addHistory);
+
+  // 历史「加载」回填输入
+  useApplyHistory("json-table", ({ input }) => setInput(input ?? ""));
+
+  const loadFile = useCallback(async (file: File) => {
+    setInput(await file.text());
+  }, []);
+
+  const { bindDrop, isDragging } = useFileDrop({ onFile: loadFile, accept: [".json", ".txt"] });
 
   const parse = useCallback(() => {
     setError(null);
     try {
       const data = JSON.parse(input);
       setRows(toRows(data));
+      addHistory({
+        toolId: "json-table",
+        toolName: "表格导出",
+        action: "转表格",
+        payload: { input },
+      });
     } catch (e) {
-      setError((e as Error).message);
+      setError(e instanceof Error ? e.message : String(e));
       setRows(null);
     }
   }, [input]);
@@ -107,12 +127,16 @@ export function JsonTable() {
           hidden
           onChange={(e) => e.target.files?.[0] && e.target.files[0].text().then(setInput)}
         />
+        <ToolHistory toolId="json-table" />
       </div>
       {error && <div className="error-box">解析失败: {error}</div>}
+      {isDragging && <div className="drop-hint">松开以载入文件</div>}
       <div className="split-view">
         <div className="pane">
           <div className="pane-title">JSON 输入（对象或数组）</div>
-          <JsonEditor value={input} onChange={setInput} />
+          <div className="drop-zone" {...bindDrop}>
+            <JsonEditor value={input} onChange={setInput} />
+          </div>
         </div>
         <div className="pane">
           <div className="pane-title">表格预览</div>

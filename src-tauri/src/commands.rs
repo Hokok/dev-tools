@@ -1,3 +1,4 @@
+use crate::curl::{HttpResult, run_curl_script};
 use crate::diff::{DiffNode, diff_json};
 use crate::extract::{JsonMatch, extract_json};
 use crate::format::{ParseError, format_json, minify_json};
@@ -37,4 +38,10 @@ pub async fn compare_json(left: String, right: String) -> Result<DiffNode, Parse
         column: e.column() as usize,
     })?;
     Ok(diff_json(&l, &r))
+}
+
+/// 直接执行 curl 脚本（调用系统 curl）
+#[tauri::command]
+pub async fn run_curl_script_cmd(script: String) -> Result<HttpResult, String> {
+    run_curl_script(&script).await
 }
