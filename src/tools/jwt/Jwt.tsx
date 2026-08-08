@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { JsonEditor } from "../../components/JsonEditor";
-import { AnnotatedJsonView } from "../../components/AnnotatedJsonView";
 import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
@@ -152,7 +151,7 @@ export function Jwt() {
         <div className="pane">
           <div className="pane-title">Header</div>
           {parsed && !("error" in parsed) ? (
-            <AnnotatedJsonView value={parsed.header} />
+            <JsonEditor value={JSON.stringify(parsed.header, null, 2)} readOnly />
           ) : (
             <JsonEditor value="" readOnly />
           )}
@@ -160,7 +159,7 @@ export function Jwt() {
         <div className="pane">
           <div className="pane-title">Payload</div>
           {parsed && !("error" in parsed) ? (
-            <AnnotatedJsonView value={parsed.payload} />
+            <JsonEditor value={JSON.stringify(parsed.payload, null, 2)} readOnly />
           ) : (
             <JsonEditor value="" readOnly />
           )}

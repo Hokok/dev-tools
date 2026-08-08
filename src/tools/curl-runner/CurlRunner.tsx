@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { JsonEditor } from "../../components/JsonEditor";
-import { AnnotatedJsonView } from "../../components/AnnotatedJsonView";
 import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
@@ -49,13 +48,14 @@ export function CurlRunner() {
     }
   }, [input, addHistory]);
 
-  // 响应体：尝试 JSON 解析 → 带折叠计数标注；失败原样文本
+  // 响应体：尝试 JSON 解析后美化，失败原样文本
   const view = useMemo(() => {
     if (!result) return null;
     try {
-      return { parsed: JSON.parse(result.body), raw: false };
+      const parsed = JSON.parse(result.body);
+      return { text: JSON.stringify(parsed, null, 2), language: "json" as const };
     } catch {
-      return { rawBody: result.body, raw: true };
+      return { text: result.body, language: "text" as const };
     }
   }, [result]);
 
@@ -101,12 +101,8 @@ export function CurlRunner() {
             </div>
           </div>
           <div className="pane">
-            <div className="pane-title">响应体{view.raw ? "" : "（JSON）"}</div>
-            {view.raw ? (
-              <JsonEditor value={view.rawBody ?? ""} readOnly language="text" />
-            ) : (
-              <AnnotatedJsonView value={view.parsed} />
-            )}
+            <div className="pane-title">响应体{view.language === "json" ? "（JSON）" : ""}</div>
+            <JsonEditor value={view.text} readOnly language={view.language} />
           </div>
         </div>
       )}
