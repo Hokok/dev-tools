@@ -15,6 +15,9 @@ dist-ssr
 # Codegraph index
 .codegraph/
 
+# Git worktrees
+.worktrees/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
