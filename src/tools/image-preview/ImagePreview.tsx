@@ -83,6 +83,7 @@ export function ImagePreview() {
         <button className="btn" data-hotkey="copy" onClick={copyB64} disabled={!input}>
           复制 Base64
         </button>
+        <span className="spacer" />
         <button className="btn" onClick={() => fileRef.current?.click()}>
           打开图片文件
         </button>
@@ -93,7 +94,6 @@ export function ImagePreview() {
           accept="image/*"
           onChange={(e) => e.target.files?.[0] && loadFile(e.target.files[0])}
         />
-        <span className="spacer" />
         <button className="btn" onClick={() => setInput("")}>清空</button>
         <ToolHistory toolId="image-preview" />
       </div>
