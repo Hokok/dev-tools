@@ -70,6 +70,8 @@ const icons: Record<string, ReactNode> = {
     Ico("regex-tester", "M3 3h10v10H3z M5 7l2-1.5M5 7l2 3M5 7l2 1.5M11 7l-2-1.5M11 7l-2 3M11 7l-2 1.5"),
 
     Ico("jwt", "M8 2l-2 2v3l-3 1.5 1 3.5 3.5-.5L8 13l.5-1.5 3.5.5 1-3.5-3-1.5V4L8 2z M8 7.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"),
+
+    Ico("param-convert", "M4 4h3v3H4z M9 4h3v3H9z M4 9h3v3H4z M9 9h3v3H9z M7.5 5.5l1 0 M5.5 7.5l0 1 M9.5 7.5l0 1 M7.5 9.5l1 0"),
   ]),
 
   ...Object.fromEntries([
