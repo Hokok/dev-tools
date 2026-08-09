@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a86d8"/>
+      <stop offset="0.55" stop-color="#0e639c"/>
+      <stop offset="1" stop-color="#0a4d80"/>
+    </linearGradient>
+    <radialGradient id="gloss" cx="0.5" cy="0.12" r="0.85">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="squircle">
+      <rect x="40" y="40" width="944" height="944" rx="224"/>
+    </clipPath>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="26" flood-color="#04182c" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- 主体 squircle -->
+  <g filter="url(#shadow)">
+    <rect x="40" y="40" width="944" height="944" rx="224" fill="url(#bg)"/>
+  </g>
+
+  <g clip-path="url(#squircle)">
+    <!-- 顶部玻璃高光 -->
+    <rect x="40" y="40" width="944" height="944" fill="url(#gloss)"/>
+    <!-- 顶部细亮边 -->
+    <rect x="40" y="40" width="944" height="6" fill="#ffffff" opacity="0.18"/>
+
+    <!-- 白色花括号 {}：居中，象形 JSON/代码 -->
+    <path d="M398 268
+             C 340 268 320 296 320 356
+             L 320 432
+             C 320 472 302 496 262 502
+             C 302 508 320 532 320 572
+             L 320 648
+             C 320 708 340 736 398 736"
+          fill="none" stroke="#ffffff" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <path d="M626 268
+             C 684 268 704 296 704 356
+             L 704 432
+             C 704 472 722 496 762 502
+             C 722 508 704 532 704 572
+             L 704 648
+             C 704 708 684 736 626 736"
+          fill="none" stroke="#ffffff" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
