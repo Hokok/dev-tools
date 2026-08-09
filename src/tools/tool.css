@@ -131,12 +131,11 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--pane-border);
+  border-radius: var(--radius-sm);
   padding: 8px;
   box-sizing: border-box;
   background: var(--bg-elevated);
-  box-shadow: var(--shadow-sm);
 }
 
 .pane-title {

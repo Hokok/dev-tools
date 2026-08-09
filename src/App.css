@@ -17,7 +17,8 @@
 /* 深色主题（默认） */
 :root[data-theme="dark"] {
   --bg: #1e1e1e;
-  --bg-elevated: #26262a;
+  --bg-elevated: #232326;
+  --pane-border: rgba(128, 128, 128, 0.14);
   --fg: #d4d4d4;
   --sidebar-bg: rgba(37, 37, 41, 0.72);
   --sidebar-border: rgba(255, 255, 255, 0.07);
@@ -59,7 +60,8 @@
 :root[data-theme="light"] {
   color-scheme: light;
   --bg: #f6f6f8;
-  --bg-elevated: #ffffff;
+  --bg-elevated: #fafafc;
+  --pane-border: rgba(128, 128, 128, 0.18);
   --fg: #1f2328;
   --sidebar-bg: rgba(246, 246, 248, 0.75);
   --sidebar-border: rgba(0, 0, 0, 0.08);
