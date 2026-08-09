@@ -2,9 +2,17 @@ import { create } from "zustand";
 
 export type Theme = "dark" | "light";
 
+/** 侧边栏「最近使用」置顶的数量上限 */
+const RECENT_LIMIT = 3;
+
+/** 非工具的容器 id（如设置页），不参与最近使用记录 */
+const NON_TOOL_IDS = new Set(["settings"]);
+
 interface AppState {
   activeTool: string;
   setActiveTool: (id: string) => void;
+  /// 最近使用的工具 id，按使用时间倒序，供侧边栏置顶
+  recentToolIds: string[];
   /// 日志提取出的 JSON，供跳转到格式化页使用
   extractedJson: string | null;
   setExtractedJson: (json: string) => void;
@@ -16,6 +24,7 @@ interface AppState {
 }
 
 const THEME_KEY = "devbox-theme";
+const RECENT_KEY = "devbox-recent-tools";
 
 /** 读取持久化主题，非法值/异常一律回落 dark，避免存储不可用导致白屏 */
 function readTheme(): Theme {
@@ -34,13 +43,52 @@ function saveTheme(t: Theme) {
   }
 }
 
-// 模块加载时即同步根节点主题，早于首帧 paint，避免主题闪烁（FOUC）
+/** 读取持久化最近使用，过滤非法 id 并去重 */
+function readRecent(): string[] {
+  try {
+    const raw = localStorage.getItem(RECENT_KEY);
+    if (!raw) return [];
+    const list = JSON.parse(raw) as unknown;
+    if (!Array.isArray(list)) return [];
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const id of list) {
+      if (typeof id !== "string" || NON_TOOL_IDS.has(id) || seen.has(id)) continue;
+      seen.add(id);
+      out.push(id);
+      if (out.length >= RECENT_LIMIT) break;
+    }
+    return out;
+  } catch {
+    // 存储不可用/数据损坏时回落为空
+    return [];
+  }
+}
+
+function saveRecent(ids: string[]) {
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(ids));
+  } catch {
+    // 存储不可用时忽略，内存态仍生效
+  }
+}
+
+/** 模块加载时即同步根节点主题，早于首帧 paint，避免主题闪烁（FOUC） */
 const initial = readTheme();
 document.documentElement.dataset.theme = initial;
 
 export const useAppStore = create<AppState>((set) => ({
   activeTool: "json-formatter",
-  setActiveTool: (id) => set({ activeTool: id }),
+  recentToolIds: readRecent(),
+  setActiveTool: (id) =>
+    set((s) => {
+      // 仅真实工具计入最近使用，置顶到头部、去重并截断
+      const recentToolIds = NON_TOOL_IDS.has(id)
+        ? s.recentToolIds
+        : [id, ...s.recentToolIds.filter((x) => x !== id)].slice(0, RECENT_LIMIT);
+      if (recentToolIds !== s.recentToolIds) saveRecent(recentToolIds);
+      return { activeTool: id, recentToolIds };
+    }),
   extractedJson: null,
   setExtractedJson: (json) => set({ extractedJson: json }),
   theme: initial,

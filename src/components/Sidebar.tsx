@@ -11,11 +11,12 @@ interface SidebarProps {
   onSelect: (id: string) => void;
 }
 
-/** 侧边栏：按分类分组渲染工具，分组可折叠；底部为主题切换与设置 */
+/** 侧边栏：按分类分组渲染工具，分组可折叠；顶部置顶最近使用；底部为主题切换与设置 */
 export function Sidebar({ isSettings, onSelect }: SidebarProps) {
   const activeTool = useAppStore((s) => s.activeTool);
   const theme = useAppStore((s) => s.theme);
   const toggleTheme = useAppStore((s) => s.toggleTheme);
+  const recentToolIds = useAppStore((s) => s.recentToolIds);
   const toolOrder = useSettingsStore((s) => s.order);
 
   // 折叠状态：category id → 是否折叠（默认展开）
@@ -24,6 +25,11 @@ export function Sidebar({ isSettings, onSelect }: SidebarProps) {
   const visibleTools = toolOrder
     .map((id) => TOOLS.find((t) => t.id === id))
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
+
+  // 最近使用：按 id 顺序，过滤已禁用/不存在的工具
+  const recentTools = recentToolIds
+    .map((id) => visibleTools.find((t) => t.id === id))
+    .filter((t): t is ToolDef => Boolean(t));
 
   // 按 CATEGORIES 定义顺序分组，空组跳过
   const groups = CATEGORIES.map((c) => ({
@@ -48,6 +54,15 @@ export function Sidebar({ isSettings, onSelect }: SidebarProps) {
 
   return (
     <aside className="sidebar">
+      {recentTools.length > 0 && (
+        <div className="sidebar-group">
+          <div className="sidebar-group-header">
+            <span className="sidebar-group-arrow">⏱</span>
+            <span className="sidebar-group-label">最近使用</span>
+          </div>
+          <div className="sidebar-group-items">{recentTools.map(renderTool)}</div>
+        </div>
+      )}
       {groups.map((g) => (
         <div key={g.id} className="sidebar-group">
           <button
