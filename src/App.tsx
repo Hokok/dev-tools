@@ -82,16 +82,16 @@ export default function App() {
             </button>
           ))}
           <div className="spacer" />
+          <button className="tool-btn" onClick={toggleTheme}>
+            <span className="tool-icon">{theme === "dark" ? "☀" : "🌙"}</span>
+            <span>{theme === "dark" ? "浅色主题" : "深色主题"}</span>
+          </button>
           <button
             className={`tool-btn ${isSettings ? "active" : ""}`}
             onClick={() => setActiveTool(SETTINGS_ID)}
           >
             <span className="tool-icon">⚙</span>
             <span>设置</span>
-          </button>
-          <button className="tool-btn" onClick={toggleTheme}>
-            <span className="tool-icon">{theme === "dark" ? "☀" : "🌙"}</span>
-            <span>{theme === "dark" ? "浅色主题" : "深色主题"}</span>
           </button>
         </aside>
         <main className="work-area">
