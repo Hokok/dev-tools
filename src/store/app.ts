@@ -92,12 +92,12 @@ export const useAppStore = create<AppState>((set) => ({
   extractedJson: null,
   setExtractedJson: (json) => set({ extractedJson: json }),
   theme: initial,
-  toggleTheme: () =>
-    set((s) => {
-      const next: Theme = s.theme === "dark" ? "light" : "dark";
-      saveTheme(next);
-      return { theme: next };
-    }),
+  toggleTheme: () => {
+    // 持久化副作用放在 updater 之外，与 setActiveTool 保持一致
+    const next: Theme = useAppStore.getState().theme === "dark" ? "light" : "dark";
+    saveTheme(next);
+    set({ theme: next });
+  },
   drafts: {},
   setDraft: (toolId, data) => set((s) => ({ drafts: { ...s.drafts, [toolId]: data } })),
 }));

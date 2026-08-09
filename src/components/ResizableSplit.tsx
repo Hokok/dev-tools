@@ -41,6 +41,16 @@ export function ResizableSplit({ left, right, defaultRatio = 0.5, style }: Resiz
     document.body.style.cursor = "col-resize";
   }, []);
 
+  // 拖拽中组件卸载（如快捷键切换工具）：事件不会派发给已移除元素，须兜底清理光标
+  useEffect(() => {
+    return () => {
+      if (dragRef.current) {
+        dragRef.current = null;
+        document.body.style.cursor = "";
+      }
+    };
+  }, []);
+
   // 拖拽期间每次 render 重建 handler，闭包始终拿到当前 ratioRef/dragRef
   const onPointerMove = useCallback((e: React.PointerEvent) => {
     const d = dragRef.current;
