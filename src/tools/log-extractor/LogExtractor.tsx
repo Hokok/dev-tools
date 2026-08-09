@@ -125,7 +125,10 @@ export function LogExtractor() {
         <div className="pane">
           <div className="pane-title">提取结果（{matches.length}，共 {totalBytes} 字节）</div>
           {matches.length === 0 ? (
-            <div className="hint">点击「提取 JSON」后在此显示命中列表</div>
+            <div className="empty-state">
+              <span className="empty-icon">📋</span>
+              点击「提取 JSON」后在此显示命中列表
+            </div>
           ) : (
             <>
               {/* 命中选择条：多条命中时切换查看，与格式化页输出一致的整栏预览 */}

@@ -49,9 +49,15 @@ export function History() {
         <span className="hint">点击「加载」可回到对应工具并还原当时的输入</span>
       </div>
       {items.length === 0 ? (
-        <div className="hint">暂无历史记录。执行工具操作后会自动记录输入内容。</div>
+        <div className="empty-state">
+          <span className="empty-icon">🕘</span>
+          暂无历史记录，执行工具操作后会自动记录
+        </div>
       ) : filtered.length === 0 ? (
-        <div className="hint">无匹配结果</div>
+        <div className="empty-state">
+          <span className="empty-icon">🔎</span>
+          无匹配结果
+        </div>
       ) : (
         <div className="match-list">
           {filtered.map((item) => (

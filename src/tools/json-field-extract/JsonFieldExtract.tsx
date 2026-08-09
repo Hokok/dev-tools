@@ -199,7 +199,10 @@ export function JsonFieldExtract() {
       <div className="pane-title">字段选择（勾选自动识别字段，支持自定义点路径）</div>
       <div className="field-list-wrap">
         {allPaths.length === 0 ? (
-          <div className="hint">{input.trim() ? "未识别到可提取字段（输入需为对象数组）" : "输入数组后自动识别字段"}</div>
+          <div className="empty-state" style={{ flex: "none", padding: "12px 8px" }}>
+            <span className="empty-icon">🗂</span>
+            {input.trim() ? "未识别到可提取字段（输入需为对象数组）" : "输入数组后自动识别字段"}
+          </div>
         ) : (
           allPaths.map((p) => (
             <label key={p} className="field-chip">

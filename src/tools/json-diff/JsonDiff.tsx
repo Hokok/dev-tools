@@ -172,13 +172,19 @@ export function JsonDiff() {
           {leftPretty || rightPretty ? (
             <TextDiffEditor original={leftPretty} modified={rightPretty} editorRef={diffRef} />
           ) : (
-            <div className="hint">点击「比对」查看结果</div>
+            <div className="empty-state">
+              <span className="empty-icon">🔍</span>
+              输入两侧 JSON 后点击「比对」
+            </div>
           )}
         </div>
         <div className="pane">
           <div className="pane-title">变更路径（{changes.length}）</div>
           {changes.length === 0 ? (
-            <div className="hint">完全一致</div>
+            <div className="empty-state">
+              <span className="empty-icon">✅</span>
+              完全一致
+            </div>
           ) : (
             <div className="path-list">
               {changes.map((c, i) => (

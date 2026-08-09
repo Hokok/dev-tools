@@ -122,8 +122,11 @@ export function Jwt() {
         <div className="pane">
           <div className="pane-title">解析结果</div>
           {!parsed || "error" in parsed ? (
-            <div className="hint">
-              {parsed && "error" in parsed ? "输入解析失败，见上方错误" : "粘贴 JWT（header.payload[.signature]）自动解析"}
+            <div className="empty-state">
+              <span className="empty-icon">🔑</span>
+              {parsed && "error" in parsed
+                ? "输入解析失败，见上方错误"
+                : "粘贴 JWT（header.payload[.signature]）自动解析"}
             </div>
           ) : (
             <div className="kv-list">

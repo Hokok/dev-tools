@@ -136,7 +136,10 @@ export function Hash() {
         <div className="pane">
           <div className="pane-title">哈希结果（实时）</div>
           {Object.keys(results).length === 0 ? (
-            <div className="hint">输入文本后自动计算</div>
+            <div className="empty-state">
+              <span className="empty-icon">🔐</span>
+              输入文本或拖入文件后自动计算
+            </div>
           ) : (
             <div className="hash-list">
               {Object.entries(results).map(([algo, hex]) =>

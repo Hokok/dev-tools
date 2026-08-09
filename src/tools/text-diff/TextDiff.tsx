@@ -87,7 +87,10 @@ export function TextDiff() {
         {showDiff ? (
           <TextDiffEditor original={left} modified={right} language="text" />
         ) : (
-          <div className="hint">点击「比对」查看结果</div>
+          <div className="empty-state">
+            <span className="empty-icon">📄</span>
+            输入两侧文本后点击「比对」
+          </div>
         )}
       </div>
     </div>

@@ -112,7 +112,8 @@ export function ImagePreview() {
           {src ? (
             <img src={src} alt="预览" className="image-preview-img" />
           ) : (
-            <div className="hint">
+            <div className="empty-state">
+              <span className="empty-icon">🖼</span>
               {input.trim() ? "Base64 格式无效，无法预览" : "粘贴 Base64 或拖入图片文件"}
             </div>
           )}

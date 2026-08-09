@@ -167,7 +167,10 @@ export function JsonTable() {
               </table>
             </div>
           ) : (
-            <div className="hint">点击「转表格」查看预览</div>
+            <div className="empty-state">
+              <span className="empty-icon">📊</span>
+              点击「转表格」查看预览
+            </div>
           )}
         </div>
       </div>
