@@ -126,6 +126,7 @@ export function JsonDiff() {
       <div className="toolbar">
         <button className="btn btn-primary" data-hotkey="run" onClick={compare}>
           比对
+          <span className="btn-hotkey">⌘↩</span>
         </button>
         <span className="hint">
           变更 {changes.length}（新增 {summary.added} / 删除 {summary.removed} / 修改 {summary.modified}）

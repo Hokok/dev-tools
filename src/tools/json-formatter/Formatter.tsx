@@ -129,6 +129,7 @@ export function Formatter() {
       <div className="toolbar">
         <button className="btn btn-primary" data-hotkey="run" onClick={() => run("format")}>
           格式化
+          <span className="btn-hotkey">⌘↩</span>
         </button>
         <button className="btn" onClick={() => run("minify")}>压缩</button>
         <button className="btn" onClick={handleUnescape}>去转义</button>
@@ -145,6 +146,7 @@ export function Formatter() {
         </label>
         <button className="btn" data-hotkey="copy" onClick={copyResult} disabled={!output}>
           复制结果
+          <span className="btn-hotkey">⇧⌘C</span>
         </button>
         <span className="spacer" />
         <button className="btn" onClick={() => fileRef.current?.click()}>打开文件</button>

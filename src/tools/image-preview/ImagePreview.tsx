@@ -82,6 +82,7 @@ export function ImagePreview() {
         </button>
         <button className="btn" data-hotkey="copy" onClick={copyB64} disabled={!input}>
           复制 Base64
+          <span className="btn-hotkey">⇧⌘C</span>
         </button>
         <span className="spacer" />
         <button className="btn" onClick={() => fileRef.current?.click()}>

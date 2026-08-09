@@ -99,6 +99,7 @@ export function LogExtractor() {
       <div className="toolbar">
         <button className="btn btn-primary" data-hotkey="run" onClick={extract}>
           提取 JSON
+          <span className="btn-hotkey">⌘↩</span>
         </button>
         <button className="btn" onClick={copyAll} disabled={matches.length === 0}>
           复制全部

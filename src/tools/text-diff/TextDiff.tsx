@@ -50,6 +50,7 @@ export function TextDiff() {
       <div className="toolbar">
         <button className="btn btn-primary" data-hotkey="run" onClick={compare}>
           比对
+          <span className="btn-hotkey">⌘↩</span>
         </button>
         <span className="spacer" />
         <button className="btn" onClick={() => leftFileRef.current?.click()}>打开左值文件</button>

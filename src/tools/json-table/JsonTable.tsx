@@ -114,7 +114,10 @@ export function JsonTable() {
   return (
     <div className="tool-page">
       <div className="toolbar">
-        <button className="btn btn-primary" onClick={parse}>转表格</button>
+        <button className="btn btn-primary" data-hotkey="run" onClick={parse}>
+          转表格
+          <span className="btn-hotkey">⌘↩</span>
+        </button>
         {rows && (
           <>
             <button className="btn" onClick={() => download(toCsv(rows), "export.csv", "text/csv")}>导出 CSV</button>

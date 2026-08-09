@@ -144,6 +144,7 @@ export function RegexTester() {
         ))}
         <button className="btn" data-hotkey="run" onClick={record} disabled={!pattern}>
           记录
+          <span className="btn-hotkey">⌘↩</span>
         </button>
         <span className="hint">命中 {matches.length} 处</span>
         <span className="spacer" />

@@ -114,6 +114,7 @@ export function EncodeConvert() {
         </button>
         <button className="btn" data-hotkey="copy" onClick={copy} disabled={!output}>
           复制结果
+          <span className="btn-hotkey">⇧⌘C</span>
         </button>
         <span className="spacer" />
         <button className="btn" onClick={() => setInput("")}>清空</button>

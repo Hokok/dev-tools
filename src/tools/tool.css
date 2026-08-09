@@ -90,6 +90,15 @@
   border-radius: 4px;
 }
 
+/* 按钮内快捷键标签：小号等宽、半透明，随按钮前景色 */
+.btn-hotkey {
+  margin-left: 6px;
+  font-size: 11px;
+  opacity: 0.65;
+  font-family: ui-monospace, monospace;
+  color: inherit;
+}
+
 .spacer {
   flex: 1;
 }

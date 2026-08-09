@@ -103,6 +103,7 @@ export function Hash() {
         ))}
         <button className="btn btn-primary" data-hotkey="run" onClick={run} disabled={!input}>
           计算
+          <span className="btn-hotkey">⌘↩</span>
         </button>
         <button
           className="btn"
@@ -116,6 +117,7 @@ export function Hash() {
           disabled={!outputText}
         >
           复制全部
+          <span className="btn-hotkey">⇧⌘C</span>
         </button>
         <span className="spacer" />
         <button className="btn" onClick={() => fileRef.current?.click()}>哈希文件</button>

@@ -66,6 +66,7 @@ export function CurlRunner() {
       <div className="toolbar">
         <button className="btn btn-primary" data-hotkey="run" onClick={run} disabled={!input.trim() || loading}>
           {loading ? "执行中…" : "执行"}
+          <span className="btn-hotkey">⌘↩</span>
         </button>
         <span className="hint">粘贴 curl 脚本 → 执行（系统 curl 直发，支持全部语法）</span>
         <span className="hint" title="请求由本机 curl 发出，不校验 TLS 证书需脚本自加 -k">
