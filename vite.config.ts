@@ -32,15 +32,12 @@ export default defineConfig(async () => ({
   },
 
   build: {
+    // Tauri 生产环境下 Monaco 的 jsonMode/shell 等语言模块通过动态 import 分 chunk 加载，
+    // 在 WKWebView 自定义协议下动态 import 路径解析可能异常，导致 tokenization 失败 → 无语法高亮。
+    // inlineDynamicImports 将所有动态 import 内联到主 bundle，消除分 chunk 问题。
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          // 将 Monaco editor.api 核心模块提取到共享 chunk，避免主入口和 jsonMode
-          // 动态 import 分别打包导致两套 languages 实例，语法高亮无法生效
-          if (id.includes("/monaco-editor/esm/vs/editor/editor.api")) {
-            return "monaco-core";
-          }
-        },
+        inlineDynamicImports: true,
       },
     },
   },
