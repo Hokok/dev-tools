@@ -5,6 +5,7 @@ import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
+import { ResizableSplit } from "../../components/ResizableSplit";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import "../tool.css";
 
@@ -69,20 +70,24 @@ export function TextDiff() {
         />
         <ToolHistory toolId="text-diff" />
       </div>
-      <div className="split-view">
-        <div className="pane">
-          <div className="pane-title">左值</div>
-          <div className="drop-zone" {...leftDrop.bindDrop}>
-            <JsonEditor value={left} onChange={setLeft} language="text" />
+      <ResizableSplit
+        left={
+          <div className="pane">
+            <div className="pane-title">左值</div>
+            <div className="drop-zone" {...leftDrop.bindDrop}>
+              <JsonEditor value={left} onChange={setLeft} language="text" />
+            </div>
           </div>
-        </div>
-        <div className="pane">
-          <div className="pane-title">右值</div>
-          <div className="drop-zone" {...rightDrop.bindDrop}>
-            <JsonEditor value={right} onChange={setRight} language="text" />
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">右值</div>
+            <div className="drop-zone" {...rightDrop.bindDrop}>
+              <JsonEditor value={right} onChange={setRight} language="text" />
+            </div>
           </div>
-        </div>
-      </div>
+        }
+      />
       <div className="pane" style={{ flex: 2 }}>
         <div className="pane-title">diff</div>
         {showDiff ? (

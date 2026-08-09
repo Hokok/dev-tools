@@ -7,6 +7,7 @@ import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
+import { ResizableSplit } from "../../components/ResizableSplit";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import type { DiffNode, ParseError } from "../../types";
 import { isParseError } from "../../types";
@@ -153,51 +154,60 @@ export function JsonDiff() {
           解析失败: {error.message}（第 {error.line} 行，第 {error.column} 列）
         </div>
       )}
-      <div className="split-view">
-        <div className="pane">
-          <div className="pane-title">左值</div>
-          <div className="drop-zone" {...leftDrop.bindDrop}>
-            <JsonEditor value={left} onChange={setLeft} error={error} />
+      <ResizableSplit
+        left={
+          <div className="pane">
+            <div className="pane-title">左值</div>
+            <div className="drop-zone" {...leftDrop.bindDrop}>
+              <JsonEditor value={left} onChange={setLeft} error={error} />
+            </div>
           </div>
-        </div>
-        <div className="pane">
-          <div className="pane-title">右值</div>
-          <div className="drop-zone" {...rightDrop.bindDrop}>
-            <JsonEditor value={right} onChange={setRight} />
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">右值</div>
+            <div className="drop-zone" {...rightDrop.bindDrop}>
+              <JsonEditor value={right} onChange={setRight} />
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="split-view" style={{ flex: 2 }}>
-        <div className="pane">
-          <div className="pane-title">diff 视图（标准化后）</div>
-          {leftPretty || rightPretty ? (
-            <TextDiffEditor original={leftPretty} modified={rightPretty} editorRef={diffRef} />
-          ) : (
-            <div className="empty-state">
-              <span className="empty-icon">🔍</span>
-              输入两侧 JSON 后点击「比对」
-            </div>
-          )}
-        </div>
-        <div className="pane">
-          <div className="pane-title">变更路径（{changes.length}）</div>
-          {changes.length === 0 ? (
-            <div className="empty-state">
-              <span className="empty-icon">✅</span>
-              完全一致
-            </div>
-          ) : (
-            <div className="path-list">
-              {changes.map((c, i) => (
-                <div key={i} className="path-item" onClick={() => revealPath(c.path)} title={c.path}>
-                  <span className={`badge badge-${c.change}`}>{c.change}</span>
-                  <span className="path-text">{c.path}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+        }
+      />
+      <ResizableSplit
+        style={{ flex: 2 }}
+        left={
+          <div className="pane">
+            <div className="pane-title">diff 视图（标准化后）</div>
+            {leftPretty || rightPretty ? (
+              <TextDiffEditor original={leftPretty} modified={rightPretty} editorRef={diffRef} />
+            ) : (
+              <div className="empty-state">
+                <span className="empty-icon">🔍</span>
+                输入两侧 JSON 后点击「比对」
+              </div>
+            )}
+          </div>
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">变更路径（{changes.length}）</div>
+            {changes.length === 0 ? (
+              <div className="empty-state">
+                <span className="empty-icon">✅</span>
+                完全一致
+              </div>
+            ) : (
+              <div className="path-list">
+                {changes.map((c, i) => (
+                  <div key={i} className="path-item" onClick={() => revealPath(c.path)} title={c.path}>
+                    <span className={`badge badge-${c.change}`}>{c.change}</span>
+                    <span className="path-text">{c.path}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        }
+      />
     </div>
   );
 }

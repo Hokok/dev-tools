@@ -7,6 +7,7 @@ import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import { useToastStore } from "../../store/toast";
+import { ResizableSplit } from "../../components/ResizableSplit";
 import "../tool.css";
 import "./json-field-extract.css";
 
@@ -231,18 +232,22 @@ export function JsonFieldExtract() {
           </button>
         </div>
       </div>
-      <div className="split-view">
-        <div className="pane">
-          <div className="pane-title">JSON 输入（对象数组）</div>
-          <div className="drop-zone" {...bindDrop}>
-            <JsonEditor value={input} onChange={setInput} />
+      <ResizableSplit
+        left={
+          <div className="pane">
+            <div className="pane-title">JSON 输入（对象数组）</div>
+            <div className="drop-zone" {...bindDrop}>
+              <JsonEditor value={input} onChange={setInput} />
+            </div>
           </div>
-        </div>
-        <div className="pane">
-          <div className="pane-title">提取结果</div>
-          <JsonOutput value={output ?? ""} />
-        </div>
-      </div>
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">提取结果</div>
+            <JsonOutput value={output ?? ""} />
+          </div>
+        }
+      />
     </div>
   );
 }

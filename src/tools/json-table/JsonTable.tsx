@@ -4,6 +4,7 @@ import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
+import { ResizableSplit } from "../../components/ResizableSplit";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import "../tool.css";
 
@@ -139,44 +140,48 @@ export function JsonTable() {
       </div>
       {error && <div className="error-box">解析失败: {error}</div>}
       {isDragging && <div className="drop-hint">松开以载入文件</div>}
-      <div className="split-view">
-        <div className="pane">
-          <div className="pane-title">JSON 输入（对象或数组）</div>
-          <div className="drop-zone" {...bindDrop}>
-            <JsonEditor value={input} onChange={setInput} />
+      <ResizableSplit
+        left={
+          <div className="pane">
+            <div className="pane-title">JSON 输入（对象或数组）</div>
+            <div className="drop-zone" {...bindDrop}>
+              <JsonEditor value={input} onChange={setInput} />
+            </div>
           </div>
-        </div>
-        <div className="pane">
-          <div className="pane-title">表格预览</div>
-          {rows ? (
-            <div className="table-wrap">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    {Object.keys(rows[0] ?? {}).map((h) => (
-                      <th key={h}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.slice(0, 200).map((r, i) => (
-                    <tr key={i}>
-                      {Object.values(r).map((v, j) => (
-                        <td key={j}>{v}</td>
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">表格预览</div>
+            {rows ? (
+              <div className="table-wrap">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      {Object.keys(rows[0] ?? {}).map((h) => (
+                        <th key={h}>{h}</th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="empty-state">
-              <span className="empty-icon">📊</span>
-              点击「转表格」查看预览
-            </div>
-          )}
-        </div>
-      </div>
+                  </thead>
+                  <tbody>
+                    {rows.slice(0, 200).map((r, i) => (
+                      <tr key={i}>
+                        {Object.values(r).map((v, j) => (
+                          <td key={j}>{v}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="empty-state">
+                <span className="empty-icon">📊</span>
+                点击「转表格」查看预览
+              </div>
+            )}
+          </div>
+        }
+      />
     </div>
   );
 }

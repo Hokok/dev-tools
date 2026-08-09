@@ -7,6 +7,7 @@ import { ToolHistory } from "../../components/ToolHistory";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import { JsonOutput } from "../../components/JsonOutput";
+import { ResizableSplit } from "../../components/ResizableSplit";
 import { useToastStore } from "../../store/toast";
 import type { JsonMatch } from "../../types";
 import "../tool.css";
@@ -120,54 +121,58 @@ export function LogExtractor() {
         <ToolHistory toolId="log-extractor" />
       </div>
       {error && <div className="error-box">{error}</div>}
-      <div className="split-view">
-        <div className="pane">
-          <div className="pane-title">日志输入</div>
-          <div className="drop-zone" {...bindDrop}>
-            <JsonEditor value={input} onChange={setInput} language="text" />
-          </div>
-        </div>
-        <div className="pane">
-          <div className="pane-title">提取结果（{matches.length}，共 {totalBytes} 字节）</div>
-          {matches.length === 0 ? (
-            <div className="empty-state">
-              <span className="empty-icon">📋</span>
-              点击「提取 JSON」后在此显示命中列表
+      <ResizableSplit
+        left={
+          <div className="pane">
+            <div className="pane-title">日志输入</div>
+            <div className="drop-zone" {...bindDrop}>
+              <JsonEditor value={input} onChange={setInput} language="text" />
             </div>
-          ) : (
-            <>
-              {/* 命中选择条：多条命中时切换查看，与格式化页输出一致的整栏预览 */}
-              <div className="match-tabs">
-                {matches.map((m, i) => (
-                  <button
-                    key={i}
-                    className={`match-tab ${i === selected ? "active" : ""}`}
-                    onClick={() => setSelected(i)}
-                    title={m.raw}
-                  >
-                    #{i + 1}
-                  </button>
-                ))}
+          </div>
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">提取结果（{matches.length}，共 {totalBytes} 字节）</div>
+            {matches.length === 0 ? (
+              <div className="empty-state">
+                <span className="empty-icon">📋</span>
+                点击「提取 JSON」后在此显示命中列表
               </div>
-              {activeMatch && (
-                <>
-                  <div className="match-actions">
-                    <span className="hint">
-                      [{activeMatch.start}..{activeMatch.end})
-                    </span>
-                    <span className="spacer" />
-                    <button className="btn btn-sm" onClick={() => formatMatch(activeMatch)}>格式化</button>
-                    <button className="btn btn-sm" onClick={() => copyMatch(activeMatch)}>复制</button>
-                  </div>
-                  <div className="match-preview" style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
-                    <JsonOutput value={JSON.stringify(activeMatch.value, null, 2)} />
-                  </div>
-                </>
-              )}
-            </>
-          )}
-        </div>
-      </div>
+            ) : (
+              <>
+                {/* 命中选择条：多条命中时切换查看，与格式化页输出一致的整栏预览 */}
+                <div className="match-tabs">
+                  {matches.map((m, i) => (
+                    <button
+                      key={i}
+                      className={`match-tab ${i === selected ? "active" : ""}`}
+                      onClick={() => setSelected(i)}
+                      title={m.raw}
+                    >
+                      #{i + 1}
+                    </button>
+                  ))}
+                </div>
+                {activeMatch && (
+                  <>
+                    <div className="match-actions">
+                      <span className="hint">
+                        [{activeMatch.start}..{activeMatch.end})
+                      </span>
+                      <span className="spacer" />
+                      <button className="btn btn-sm" onClick={() => formatMatch(activeMatch)}>格式化</button>
+                      <button className="btn btn-sm" onClick={() => copyMatch(activeMatch)}>复制</button>
+                    </div>
+                    <div className="match-preview" style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
+                      <JsonOutput value={JSON.stringify(activeMatch.value, null, 2)} />
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        }
+      />
       {isDragging && <div className="drop-hint">松开以载入日志文件</div>}
     </div>
   );

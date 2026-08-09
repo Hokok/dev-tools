@@ -7,6 +7,7 @@ import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
+import { ResizableSplit } from "../../components/ResizableSplit";
 import { useToastStore } from "../../store/toast";
 import type { ParseError } from "../../types";
 import { isParseError } from "../../types";
@@ -167,18 +168,22 @@ export function Formatter() {
           解析失败: {error.message}（第 {error.line} 行，第 {error.column} 列）
         </div>
       )}
-      <div className="split-view">
-        <div className="pane">
-          <div className="pane-title">输入</div>
-          <div className="drop-zone" {...bindDrop}>
-            <JsonEditor value={input} onChange={setInput} error={error} />
+      <ResizableSplit
+        left={
+          <div className="pane">
+            <div className="pane-title">输入</div>
+            <div className="drop-zone" {...bindDrop}>
+              <JsonEditor value={input} onChange={setInput} error={error} />
+            </div>
           </div>
-        </div>
-        <div className="pane">
-          <div className="pane-title">输出</div>
-          <JsonOutput value={output} />
-        </div>
-      </div>
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">输出</div>
+            <JsonOutput value={output} />
+          </div>
+        }
+      />
     </div>
   );
 }

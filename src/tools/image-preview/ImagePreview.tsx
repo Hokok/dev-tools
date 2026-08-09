@@ -6,6 +6,7 @@ import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import { useToastStore } from "../../store/toast";
+import { ResizableSplit } from "../../components/ResizableSplit";
 import "../tool.css";
 
 function stripDataUri(input: string): string {
@@ -104,25 +105,29 @@ export function ImagePreview() {
       {error && <div className="error-box">{error}</div>}
       {checkError && <div className="error-box">{checkError}</div>}
       {isDragging && <div className="drop-hint">松开以载入图片</div>}
-      <div className="split-view">
-        <div className="pane">
-          <div className="pane-title">Base64 输入</div>
-          <div className="drop-zone" {...bindDrop}>
-            <JsonEditor value={input} onChange={setInput} language="text" />
-          </div>
-        </div>
-        <div className="pane">
-          <div className="pane-title">图片预览</div>
-          {src ? (
-            <img src={src} alt="预览" className="image-preview-img" />
-          ) : (
-            <div className="empty-state">
-              <span className="empty-icon">🖼</span>
-              {input.trim() ? "Base64 格式无效，无法预览" : "粘贴 Base64 或拖入图片文件"}
+      <ResizableSplit
+        left={
+          <div className="pane">
+            <div className="pane-title">Base64 输入</div>
+            <div className="drop-zone" {...bindDrop}>
+              <JsonEditor value={input} onChange={setInput} language="text" />
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">图片预览</div>
+            {src ? (
+              <img src={src} alt="预览" className="image-preview-img" />
+            ) : (
+              <div className="empty-state">
+                <span className="empty-icon">🖼</span>
+                {input.trim() ? "Base64 格式无效，无法预览" : "粘贴 Base64 或拖入图片文件"}
+              </div>
+            )}
+          </div>
+        }
+      />
     </div>
   );
 }

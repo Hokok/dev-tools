@@ -5,6 +5,7 @@ import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useToastStore } from "../../store/toast";
+import { ResizableSplit } from "../../components/ResizableSplit";
 import { ALL_ALGORITHMS, computeAll, type HashAlgorithm } from "../../utils/hash";
 import "../tool.css";
 
@@ -136,35 +137,39 @@ export function Hash() {
         <ToolHistory toolId="hash" />
       </div>
       {error && <div className="error-box">{error}</div>}
-      <div className="split-view">
-        <div className="pane">
-          <div className="pane-title">输入（文本或拖入文件）</div>
-          <JsonEditor value={input} onChange={setInput} language="text" />
-        </div>
-        <div className="pane">
-          <div className="pane-title">哈希结果（实时）</div>
-          {Object.keys(results).length === 0 ? (
-            <div className="empty-state">
-              <span className="empty-icon">🔐</span>
-              输入文本或拖入文件后自动计算
-            </div>
-          ) : (
-            <div className="hash-list">
-              {Object.entries(results).map(([algo, hex]) =>
-                isAlgorithm(algo) ? (
-                  <div key={algo} className="hash-item">
-                    <span className="hash-key">{algo}</span>
-                    <code className="hash-value" title={hex}>
-                      {hex}
-                    </code>
-                    <button className="btn btn-sm" onClick={() => copyHash(algo)}>复制</button>
-                  </div>
-                ) : null,
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+      <ResizableSplit
+        left={
+          <div className="pane">
+            <div className="pane-title">输入（文本或拖入文件）</div>
+            <JsonEditor value={input} onChange={setInput} language="text" />
+          </div>
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">哈希结果（实时）</div>
+            {Object.keys(results).length === 0 ? (
+              <div className="empty-state">
+                <span className="empty-icon">🔐</span>
+                输入文本或拖入文件后自动计算
+              </div>
+            ) : (
+              <div className="hash-list">
+                {Object.entries(results).map(([algo, hex]) =>
+                  isAlgorithm(algo) ? (
+                    <div key={algo} className="hash-item">
+                      <span className="hash-key">{algo}</span>
+                      <code className="hash-value" title={hex}>
+                        {hex}
+                      </code>
+                      <button className="btn btn-sm" onClick={() => copyHash(algo)}>复制</button>
+                    </div>
+                  ) : null,
+                )}
+              </div>
+            )}
+          </div>
+        }
+      />
     </div>
   );
 }

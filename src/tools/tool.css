@@ -127,13 +127,6 @@
   }
 }
 
-.split-view {
-  display: flex;
-  gap: 8px;
-  flex: 1;
-  min-height: 0;
-}
-
 .pane {
   display: flex;
   flex-direction: column;

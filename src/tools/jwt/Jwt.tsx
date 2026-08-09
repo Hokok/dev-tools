@@ -4,6 +4,7 @@ import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
+import { ResizableSplit } from "../../components/ResizableSplit";
 import { base64UrlDecode } from "../../utils/base64url";
 import "../tool.css";
 
@@ -114,60 +115,70 @@ export function Jwt() {
         <ToolHistory toolId="jwt" />
       </div>
       {error && <div className="error-box">{error}</div>}
-      <div className="split-view" style={{ flex: 2 }}>
-        <div className="pane">
-          <div className="pane-title">JWT Token</div>
-          <JsonEditor value={token} onChange={setToken} language="text" />
-        </div>
-        <div className="pane">
-          <div className="pane-title">解析结果</div>
-          {!parsed || "error" in parsed ? (
-            <div className="empty-state">
-              <span className="empty-icon">🔑</span>
-              {parsed && "error" in parsed
-                ? "输入解析失败，见上方错误"
-                : "粘贴 JWT（header.payload[.signature]）自动解析"}
-            </div>
-          ) : (
-            <div className="kv-list">
-              {expStatus && (
-                <div className={`kv-item ${expStatus.expired ? "kv-expired" : ""}`}>
-                  <span className="kv-key">有效期</span>
-                  <span className="kv-value">
-                {expStatus.expired
-                  ? `已过期 ${Math.floor(-expStatus.remain)} 秒`
-                  : `剩余 ${Math.floor(expStatus.remain)} 秒（${fmtTime(expStatus.remain)}）`}
-                  </span>
-                </div>
-              )}
-              {claims.map((c) => (
-                <div key={c.key} className="kv-item">
-                  <span className="kv-key">{c.key}</span>
-                  <span className="kv-value">{c.value}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="split-view" style={{ flex: 2 }}>
-        <div className="pane">
-          <div className="pane-title">Header</div>
-          {parsed && !("error" in parsed) ? (
-            <JsonEditor value={JSON.stringify(parsed.header, null, 2)} readOnly />
-          ) : (
-            <JsonEditor value="" readOnly />
-          )}
-        </div>
-        <div className="pane">
-          <div className="pane-title">Payload</div>
-          {parsed && !("error" in parsed) ? (
-            <JsonEditor value={JSON.stringify(parsed.payload, null, 2)} readOnly />
-          ) : (
-            <JsonEditor value="" readOnly />
-          )}
-        </div>
-      </div>
+      <ResizableSplit
+        style={{ flex: 2 }}
+        left={
+          <div className="pane">
+            <div className="pane-title">JWT Token</div>
+            <JsonEditor value={token} onChange={setToken} language="text" />
+          </div>
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">解析结果</div>
+            {!parsed || "error" in parsed ? (
+              <div className="empty-state">
+                <span className="empty-icon">🔑</span>
+                {parsed && "error" in parsed
+                  ? "输入解析失败，见上方错误"
+                  : "粘贴 JWT（header.payload[.signature]）自动解析"}
+              </div>
+            ) : (
+              <div className="kv-list">
+                {expStatus && (
+                  <div className={`kv-item ${expStatus.expired ? "kv-expired" : ""}`}>
+                    <span className="kv-key">有效期</span>
+                    <span className="kv-value">
+                  {expStatus.expired
+                    ? `已过期 ${Math.floor(-expStatus.remain)} 秒`
+                    : `剩余 ${Math.floor(expStatus.remain)} 秒（${fmtTime(expStatus.remain)}）`}
+                    </span>
+                  </div>
+                )}
+                {claims.map((c) => (
+                  <div key={c.key} className="kv-item">
+                    <span className="kv-key">{c.key}</span>
+                    <span className="kv-value">{c.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        }
+      />
+      <ResizableSplit
+        style={{ flex: 2 }}
+        left={
+          <div className="pane">
+            <div className="pane-title">Header</div>
+            {parsed && !("error" in parsed) ? (
+              <JsonEditor value={JSON.stringify(parsed.header, null, 2)} readOnly />
+            ) : (
+              <JsonEditor value="" readOnly />
+            )}
+          </div>
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">Payload</div>
+            {parsed && !("error" in parsed) ? (
+              <JsonEditor value={JSON.stringify(parsed.payload, null, 2)} readOnly />
+            ) : (
+              <JsonEditor value="" readOnly />
+            )}
+          </div>
+        }
+      />
     </div>
   );
 }

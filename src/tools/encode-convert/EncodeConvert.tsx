@@ -5,6 +5,7 @@ import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useToastStore } from "../../store/toast";
+import { ResizableSplit } from "../../components/ResizableSplit";
 import {
   base64Decode,
   base64Encode,
@@ -124,16 +125,20 @@ export function EncodeConvert() {
         <ToolHistory toolId="encode-convert" />
       </div>
       {error && <div className="error-box">{error}</div>}
-      <div className="split-view">
-        <div className="pane">
-          <div className="pane-title">输入</div>
-          <JsonEditor value={input} onChange={setInput} language="text" />
-        </div>
-        <div className="pane">
-          <div className="pane-title">输出（实时）</div>
-          <JsonEditor value={output} readOnly language="text" />
-        </div>
-      </div>
+      <ResizableSplit
+        left={
+          <div className="pane">
+            <div className="pane-title">输入</div>
+            <JsonEditor value={input} onChange={setInput} language="text" />
+          </div>
+        }
+        right={
+          <div className="pane">
+            <div className="pane-title">输出（实时）</div>
+            <JsonEditor value={output} readOnly language="text" />
+          </div>
+        }
+      />
     </div>
   );
 }

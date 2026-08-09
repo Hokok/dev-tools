@@ -5,6 +5,7 @@ import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
+import { ResizableSplit } from "../../components/ResizableSplit";
 import type { HttpResult } from "../../types";
 import "../tool.css";
 
@@ -84,28 +85,33 @@ export function CurlRunner() {
       </div>
 
       {result && view && (
-        <div className="split-view" style={{ flex: 1 }}>
-          <div className="pane" style={{ flex: 2 }}>
-            <div className="pane-title">响应体{view.language === "json" ? "（JSON）" : ""}</div>
-            <JsonEditor value={view.text} readOnly language={view.language} />
-          </div>
-          <div className="pane" style={{ flex: 1 }}>
-            <div className="pane-title">
-              <span className={`badge ${statusClass(result.status)}`}>
-                {result.status} {result.status_text}
-              </span>
-              <span className="hint"> {result.duration_ms} ms</span>
+        <ResizableSplit
+          defaultRatio={0.66}
+          left={
+            <div className="pane">
+              <div className="pane-title">响应体{view.language === "json" ? "（JSON）" : ""}</div>
+              <JsonEditor value={view.text} readOnly language={view.language} />
             </div>
-            <div className="resp-headers">
-              {result.headers.map(([k, v], i) => (
-                <div key={i} className="kv-item">
-                  <span className="kv-key">{k}</span>
-                  <span className="kv-value">{v}</span>
-                </div>
-              ))}
+          }
+          right={
+            <div className="pane">
+              <div className="pane-title">
+                <span className={`badge ${statusClass(result.status)}`}>
+                  {result.status} {result.status_text}
+                </span>
+                <span className="hint"> {result.duration_ms} ms</span>
+              </div>
+              <div className="resp-headers">
+                {result.headers.map(([k, v], i) => (
+                  <div key={i} className="kv-item">
+                    <span className="kv-key">{k}</span>
+                    <span className="kv-value">{v}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
+          }
+        />
       )}
     </div>
   );
