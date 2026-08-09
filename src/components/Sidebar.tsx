@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { CATEGORIES, TOOLS } from "../tools";
+import { TOOLS } from "../tools";
 import type { ToolDef } from "../tools";
 import { useAppStore } from "../store/app";
 import { useSettingsStore } from "../store/settings";
@@ -11,34 +10,16 @@ interface SidebarProps {
   onSelect: (id: string) => void;
 }
 
-/** 侧边栏：按分类分组渲染工具，分组可折叠；顶部置顶最近使用；底部为主题切换与设置 */
+/** 侧边栏：按配置顺序扁平渲染工具列表；底部为主题切换与设置 */
 export function Sidebar({ isSettings, onSelect }: SidebarProps) {
   const activeTool = useAppStore((s) => s.activeTool);
   const theme = useAppStore((s) => s.theme);
   const toggleTheme = useAppStore((s) => s.toggleTheme);
-  const recentToolIds = useAppStore((s) => s.recentToolIds);
   const toolOrder = useSettingsStore((s) => s.order);
-
-  // 折叠状态：category id → 是否折叠（默认展开）
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const visibleTools = toolOrder
     .map((id) => TOOLS.find((t) => t.id === id))
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
-
-  // 最近使用：按 id 顺序，过滤已禁用/不存在的工具
-  const recentTools = recentToolIds
-    .map((id) => visibleTools.find((t) => t.id === id))
-    .filter((t): t is ToolDef => Boolean(t));
-
-  // 按 CATEGORIES 定义顺序分组，空组跳过
-  const groups = CATEGORIES.map((c) => ({
-    ...c,
-    tools: visibleTools.filter((t) => t.category === c.id),
-  })).filter((g) => g.tools.length > 0);
-
-  const toggleCollapse = (id: string) =>
-    setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const renderTool = (t: ToolDef) => (
     <button
@@ -54,30 +35,7 @@ export function Sidebar({ isSettings, onSelect }: SidebarProps) {
 
   return (
     <aside className="sidebar">
-      {recentTools.length > 0 && (
-        <div className="sidebar-group">
-          <div className="sidebar-group-header">
-            <span className="sidebar-group-arrow">⏱</span>
-            <span className="sidebar-group-label">最近使用</span>
-          </div>
-          <div className="sidebar-group-items">{recentTools.map(renderTool)}</div>
-        </div>
-      )}
-      {groups.map((g) => (
-        <div key={g.id} className="sidebar-group">
-          <button
-            className="sidebar-group-header"
-            onClick={() => toggleCollapse(g.id)}
-            title={collapsed[g.id] ? "展开分组" : "折叠分组"}
-          >
-            <span className="sidebar-group-arrow">{collapsed[g.id] ? "▸" : "▾"}</span>
-            <span className="sidebar-group-label">{g.label}</span>
-          </button>
-          {!collapsed[g.id] && (
-            <div className="sidebar-group-items">{g.tools.map(renderTool)}</div>
-          )}
-        </div>
-      ))}
+      {visibleTools.map(renderTool)}
       <div className="spacer" />
       <button className="tool-btn" onClick={toggleTheme} title={theme === "dark" ? "切换浅色主题" : "切换深色主题"}>
         <span className="tool-icon">{theme === "dark" ? "☀" : "🌙"}</span>

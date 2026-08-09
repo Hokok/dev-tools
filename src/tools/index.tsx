@@ -20,32 +20,22 @@ export interface ToolDef {
   name: string;
   icon: ReactNode;
   component: ComponentType;
-  /** 侧边栏分组，用于工具分类展示 */
-  category: string;
 }
-
-/** 工具分类：id → 中文标签 */
-export const CATEGORIES: { id: string; label: string }[] = [
-  { id: "json", label: "JSON" },
-  { id: "text", label: "文本与调试" },
-  { id: "encode", label: "编码与安全" },
-  { id: "general", label: "通用" },
-];
 
 /** 工具注册表：新增工具只需在此追加一项 */
 export const TOOLS: ToolDef[] = [
-  { id: "json-formatter", name: "JSON 格式化", icon: <ToolIcon name="json-formatter" />, component: Formatter, category: "json" },
-  { id: "json-diff", name: "JSON 比对", icon: <ToolIcon name="json-diff" />, component: JsonDiff, category: "json" },
-  { id: "log-extractor", name: "日志提取", icon: <ToolIcon name="log-extractor" />, component: LogExtractor, category: "json" },
-  { id: "text-diff", name: "文本比对", icon: <ToolIcon name="text-diff" />, component: TextDiff, category: "text" },
-  { id: "json-table", name: "表格导出", icon: <ToolIcon name="json-table" />, component: JsonTable, category: "json" },
-  { id: "json-field-extract", name: "字段提取", icon: <ToolIcon name="json-field-extract" />, component: JsonFieldExtract, category: "json" },
-  { id: "history", name: "历史记录", icon: <ToolIcon name="history" />, component: History, category: "general" },
-  { id: "curl-runner", name: "Curl 执行", icon: <ToolIcon name="curl-runner" />, component: CurlRunner, category: "text" },
-  { id: "image-preview", name: "图片预览", icon: <ToolIcon name="image-preview" />, component: ImagePreview, category: "text" },
-  { id: "encode-convert", name: "编码转换", icon: <ToolIcon name="encode-convert" />, component: EncodeConvert, category: "encode" },
-  { id: "timestamp", name: "时间戳", icon: <ToolIcon name="timestamp" />, component: Timestamp, category: "encode" },
-  { id: "hash", name: "Hash 计算", icon: <ToolIcon name="hash" />, component: Hash, category: "encode" },
-  { id: "regex-tester", name: "正则测试", icon: <ToolIcon name="regex-tester" />, component: RegexTester, category: "text" },
-  { id: "jwt", name: "JWT 解析", icon: <ToolIcon name="jwt" />, component: Jwt, category: "encode" },
+  { id: "json-formatter", name: "JSON 格式化", icon: <ToolIcon name="json-formatter" />, component: Formatter },
+  { id: "json-diff", name: "JSON 比对", icon: <ToolIcon name="json-diff" />, component: JsonDiff },
+  { id: "log-extractor", name: "日志提取", icon: <ToolIcon name="log-extractor" />, component: LogExtractor },
+  { id: "text-diff", name: "文本比对", icon: <ToolIcon name="text-diff" />, component: TextDiff },
+  { id: "json-table", name: "表格导出", icon: <ToolIcon name="json-table" />, component: JsonTable },
+  { id: "json-field-extract", name: "字段提取", icon: <ToolIcon name="json-field-extract" />, component: JsonFieldExtract },
+  { id: "history", name: "历史记录", icon: <ToolIcon name="history" />, component: History },
+  { id: "curl-runner", name: "Curl 执行", icon: <ToolIcon name="curl-runner" />, component: CurlRunner },
+  { id: "image-preview", name: "图片预览", icon: <ToolIcon name="image-preview" />, component: ImagePreview },
+  { id: "encode-convert", name: "编码转换", icon: <ToolIcon name="encode-convert" />, component: EncodeConvert },
+  { id: "timestamp", name: "时间戳", icon: <ToolIcon name="timestamp" />, component: Timestamp },
+  { id: "hash", name: "Hash 计算", icon: <ToolIcon name="hash" />, component: Hash },
+  { id: "regex-tester", name: "正则测试", icon: <ToolIcon name="regex-tester" />, component: RegexTester },
+  { id: "jwt", name: "JWT 解析", icon: <ToolIcon name="jwt" />, component: Jwt },
 ];
