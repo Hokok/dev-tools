@@ -6,6 +6,7 @@ import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useFileDrop } from "../../hooks/useFileDrop";
+import { useToastStore } from "../../store/toast";
 import "../tool.css";
 import "./json-field-extract.css";
 
@@ -90,6 +91,7 @@ export function JsonFieldExtract() {
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const addHistory = useHistoryStore((s) => s.addHistory);
+  const showToast = useToastStore((s) => s.showToast);
 
   // 历史「加载」回填输入（勾选路径不恢复）
   useApplyHistory("json-field-extract", ({ input }) => setInput(input ?? ""));
@@ -167,10 +169,11 @@ export function JsonFieldExtract() {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
+      showToast("已复制结果");
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
-  }, [output]);
+  }, [output, showToast]);
 
   useSaveDraft("json-field-extract", { input, paths, custom });
 

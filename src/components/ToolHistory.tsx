@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useHistoryStore, type HistoryItem } from "../store/history";
+import { useToastStore } from "../store/toast";
 import "./tool-history.css";
 
 interface ToolHistoryProps {
@@ -25,6 +26,7 @@ export function ToolHistory({ toolId, emptyText = "暂无该工具的历史记�
   const items = useHistoryStore((s) => s.items);
   const loadFromHistory = useHistoryStore((s) => s.loadFromHistory);
   const removeItem = useHistoryStore((s) => s.removeItem);
+  const showToast = useToastStore((s) => s.showToast);
   const rootRef = useRef<HTMLDivElement>(null);
 
   const toolItems = useMemo(() => {
@@ -50,8 +52,9 @@ export function ToolHistory({ toolId, emptyText = "暂无该工具的历史记�
     (item: HistoryItem) => {
       setOpen(false);
       loadFromHistory(item);
+      showToast("已加载历史记录");
     },
-    [loadFromHistory],
+    [loadFromHistory, showToast],
   );
 
   const hasItems = items.filter((it) => it.toolId === toolId).length > 0;

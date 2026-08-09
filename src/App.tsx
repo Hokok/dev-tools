@@ -8,6 +8,7 @@ import { useSettingsStore } from "./store/settings";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CommandPalette } from "./components/CommandPalette";
+import { ToastContainer } from "./components/Toast";
 import "./App.css";
 
 const SETTINGS_ID = "settings";
@@ -91,6 +92,7 @@ export default function App() {
         </main>
       </div>
       <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
+      <ToastContainer />
     </div>
   );
 }

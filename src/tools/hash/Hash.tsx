@@ -4,6 +4,7 @@ import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
+import { useToastStore } from "../../store/toast";
 import { ALL_ALGORITHMS, computeAll, type HashAlgorithm } from "../../utils/hash";
 import "../tool.css";
 
@@ -17,6 +18,7 @@ export function Hash() {
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const addHistory = useHistoryStore((s) => s.addHistory);
+  const showToast = useToastStore((s) => s.showToast);
 
   useApplyHistory("hash", ({ input }) => setInput(input ?? ""));
 
@@ -63,6 +65,7 @@ export function Hash() {
     if (!v) return;
     try {
       await navigator.clipboard.writeText(v);
+      showToast(`已复制 ${algo}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
@@ -110,9 +113,12 @@ export function Hash() {
           data-hotkey="copy"
           onClick={() => {
             if (!outputText) return;
-            navigator.clipboard.writeText(outputText).catch((e) => {
-              setError(e instanceof Error ? e.message : String(e));
-            });
+            navigator.clipboard
+              .writeText(outputText)
+              .then(() => showToast("已复制全部哈希"))
+              .catch((e) => {
+                setError(e instanceof Error ? e.message : String(e));
+              });
           }}
           disabled={!outputText}
         >

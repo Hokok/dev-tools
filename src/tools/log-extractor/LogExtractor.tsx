@@ -7,6 +7,7 @@ import { ToolHistory } from "../../components/ToolHistory";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import { JsonOutput } from "../../components/JsonOutput";
+import { useToastStore } from "../../store/toast";
 import type { JsonMatch } from "../../types";
 import "../tool.css";
 
@@ -22,6 +23,7 @@ export function LogExtractor() {
   const [selected, setSelected] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const addHistory = useHistoryStore((s) => s.addHistory);
+  const showToast = useToastStore((s) => s.showToast);
   const setExtractedJson = useAppStore((s) => s.setExtractedJson);
   const setActiveTool = useAppStore((s) => s.setActiveTool);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -54,21 +56,23 @@ export function LogExtractor() {
     async (m: JsonMatch) => {
       try {
         await navigator.clipboard.writeText(JSON.stringify(m.value, null, 2));
+        showToast("已复制该命中");
       } catch (e) {
         setError(errMsg(e));
       }
     },
-    [],
+    [showToast],
   );
 
   const copyAll = useCallback(async () => {
     if (matches.length === 0) return;
     try {
       await navigator.clipboard.writeText(JSON.stringify(matches.map((m) => m.value), null, 2));
+      showToast(`已复制 ${matches.length} 条命中`);
     } catch (e) {
       setError(errMsg(e));
     }
-  }, [matches]);
+  }, [matches, showToast]);
 
   const formatMatch = useCallback(
     (m: JsonMatch) => {

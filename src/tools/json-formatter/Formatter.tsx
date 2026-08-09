@@ -7,6 +7,7 @@ import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
+import { useToastStore } from "../../store/toast";
 import type { ParseError } from "../../types";
 import { isParseError } from "../../types";
 import "../tool.css";
@@ -40,6 +41,7 @@ export function Formatter() {
   const extractedJson = useAppStore((s) => s.extractedJson);
   const setExtractedJson = useAppStore((s) => s.setExtractedJson);
   const addHistory = useHistoryStore((s) => s.addHistory);
+  const showToast = useToastStore((s) => s.showToast);
 
   // 历史「加载」回填输入
   useApplyHistory("json-formatter", ({ input }) => setInput(input ?? ""));
@@ -117,10 +119,11 @@ export function Formatter() {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
+      showToast("已复制到剪贴板");
     } catch (e) {
       setError({ message: `复制失败: ${errMsg(e)}`, line: 1, column: 1 });
     }
-  }, [output]);
+  }, [output, showToast]);
 
   useSaveDraft("json-formatter", { input, indent, autoRun });
 

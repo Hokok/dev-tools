@@ -4,6 +4,7 @@ import { useAppStore } from "../../store/app";
 import { useApplyHistory, useHistoryStore } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
+import { useToastStore } from "../../store/toast";
 import {
   base64Decode,
   base64Encode,
@@ -31,6 +32,7 @@ export function EncodeConvert() {
   const [input, setInput] = useState((savedDraft?.input as string) ?? "");
   const [error, setError] = useState<string | null>(null);
   const addHistory = useHistoryStore((s) => s.addHistory);
+  const showToast = useToastStore((s) => s.showToast);
 
   useApplyHistory("encode-convert", ({ input }) => setInput(input ?? ""));
 
@@ -83,6 +85,7 @@ export function EncodeConvert() {
     if (!output) return;
     try {
       await navigator.clipboard.writeText(output);
+      showToast("已复制结果");
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }

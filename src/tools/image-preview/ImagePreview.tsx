@@ -5,6 +5,7 @@ import { useApplyHistory } from "../../store/history";
 import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { useFileDrop } from "../../hooks/useFileDrop";
+import { useToastStore } from "../../store/toast";
 import "../tool.css";
 
 function stripDataUri(input: string): string {
@@ -17,6 +18,7 @@ export function ImagePreview() {
   const [input, setInput] = useState((savedDraft?.input as string) ?? "");
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const showToast = useToastStore((s) => s.showToast);
 
   useApplyHistory("image-preview", ({ input: savedInput }) => setInput(savedInput ?? ""));
 
@@ -67,10 +69,11 @@ export function ImagePreview() {
     if (!input) return;
     try {
       await navigator.clipboard.writeText(input);
+      showToast("已复制 Base64");
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
-  }, [input]);
+  }, [input, showToast]);
 
   useSaveDraft("image-preview", { input });
 
