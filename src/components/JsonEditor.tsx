@@ -11,6 +11,8 @@ export const editorOptions: editor.IStandaloneEditorConstructionOptions = {
   wordWrap: "on",
   renderWhitespace: "none",
   lineNumbersMinChars: 3,
+  // 容器尺寸变化（如分栏拖拽）时自动重算布局，否则高亮/可见区域会错位
+  automaticLayout: true,
 };
 
 interface JsonEditorProps {

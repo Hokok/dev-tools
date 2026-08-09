@@ -334,7 +334,7 @@
   outline: none;
 }
 
-.drop-zone:focus-within,
+/* 仅拖拽时显示虚线框；编辑器获得焦点时不显示，避免蓝色 focus 框 */
 .drop-zone.dragging {
   outline: 2px dashed var(--accent);
   outline-offset: -2px;

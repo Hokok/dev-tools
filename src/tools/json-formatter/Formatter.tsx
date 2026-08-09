@@ -9,6 +9,7 @@ import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { ResizableSplit } from "../../components/ResizableSplit";
 import { useToastStore } from "../../store/toast";
+import { readFileAsUtf8 } from "../../utils/fileEncoding";
 import type { ParseError } from "../../types";
 import { isParseError } from "../../types";
 import "../tool.css";
@@ -111,7 +112,7 @@ export function Formatter() {
   }, [input, indent, autoRun]);
 
   const loadFile = useCallback(async (file: File) => {
-    setInput(await file.text());
+    setInput(await readFileAsUtf8(file));
   }, []);
 
   const { bindDrop, isDragging } = useFileDrop({ onFile: loadFile, accept: [".json", ".txt"] });

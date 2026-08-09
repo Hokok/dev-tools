@@ -7,6 +7,7 @@ import { useSaveDraft } from "../../hooks/useSaveDraft";
 import { ToolHistory } from "../../components/ToolHistory";
 import { ResizableSplit } from "../../components/ResizableSplit";
 import { useFileDrop } from "../../hooks/useFileDrop";
+import { readFileAsUtf8 } from "../../utils/fileEncoding";
 import "../tool.css";
 
 export function TextDiff() {
@@ -35,10 +36,10 @@ export function TextDiff() {
   };
 
   const loadLeft = useCallback(async (file: File) => {
-    setLeft(await file.text());
+    setLeft(await readFileAsUtf8(file));
   }, []);
   const loadRight = useCallback(async (file: File) => {
-    setRight(await file.text());
+    setRight(await readFileAsUtf8(file));
   }, []);
 
   const leftDrop = useFileDrop({ onFile: loadLeft });
@@ -60,13 +61,13 @@ export function TextDiff() {
           ref={leftFileRef}
           type="file"
           hidden
-          onChange={(e) => e.target.files?.[0] && e.target.files[0].text().then(setLeft)}
+          onChange={(e) => e.target.files?.[0] && readFileAsUtf8(e.target.files[0]).then(setLeft)}
         />
         <input
           ref={rightFileRef}
           type="file"
           hidden
-          onChange={(e) => e.target.files?.[0] && e.target.files[0].text().then(setRight)}
+          onChange={(e) => e.target.files?.[0] && readFileAsUtf8(e.target.files[0]).then(setRight)}
         />
         <ToolHistory toolId="text-diff" />
       </div>
