@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import "./resizable-split.css";
 
@@ -15,43 +15,47 @@ const MIN_RATIO = 0.15;
 const MAX_RATIO = 0.85;
 
 /**
- * 可拖拽分隔的左右分栏：中间 6px 分隔条，按住拖动调整两侧宽度。
+ * 可拖拽分隔的左右分栏：中间 8px 分隔条，按住拖动调整两侧宽度。
+ * 拖拽指针捕获在 handle 元素上，组件卸载或 pointercancel 自动结束。
  * 不持久化比例，组件卸载即复位（YAGNI，需持久化再加）。
  */
 export function ResizableSplit({ left, right, defaultRatio = 0.5, style }: ResizableSplitProps) {
   const [ratio, setRatio] = useState(defaultRatio);
   const containerRef = useRef<HTMLDivElement>(null);
+  const handleRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ startX: number; startRatio: number } | null>(null);
-
-  const onPointerDown = useCallback((e: React.PointerEvent) => {
-    e.preventDefault();
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    dragRef.current = { startX: e.clientX, startRatio: ratioRef.current };
-    const move = (ev: PointerEvent) => {
-      const d = dragRef.current;
-      const el = containerRef.current;
-      if (!d || !el) return;
-      const width = el.getBoundingClientRect().width;
-      if (width <= 0) return;
-      const delta = (ev.clientX - d.startX) / width;
-      const next = Math.min(MAX_RATIO, Math.max(MIN_RATIO, d.startRatio + delta));
-      setRatio(next);
-    };
-    const up = () => {
-      dragRef.current = null;
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", up);
-      document.body.style.cursor = "";
-    };
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", up);
-    document.body.style.cursor = "col-resize";
-  }, []);
 
   // 拖拽回调中读取最新 ratio（避免闭包陈旧）
   const ratioRef = useRef(ratio);
-  ratioRef.current = ratio;
+  useEffect(() => {
+    ratioRef.current = ratio;
+  }, [ratio]);
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    const el = handleRef.current;
+    if (!el) return;
+    e.preventDefault();
+    // 指针捕获：move/up/cancel 均派发给 handle，脱离窗口也不会丢失
+    el.setPointerCapture(e.pointerId);
+    dragRef.current = { startX: e.clientX, startRatio: ratioRef.current };
+    document.body.style.cursor = "col-resize";
+  }, []);
+
+  // 拖拽期间每次 render 重建 handler，闭包始终拿到当前 ratioRef/dragRef
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    const d = dragRef.current;
+    const el = containerRef.current;
+    if (!d || !el) return;
+    const width = el.getBoundingClientRect().width;
+    if (width <= 0) return;
+    const delta = (e.clientX - d.startX) / width;
+    setRatio(Math.min(MAX_RATIO, Math.max(MIN_RATIO, d.startRatio + delta)));
+  }, []);
+
+  const endDrag = useCallback(() => {
+    dragRef.current = null;
+    document.body.style.cursor = "";
+  }, []);
 
   const leftStyle: CSSProperties = {
     flexGrow: ratio,
@@ -71,7 +75,15 @@ export function ResizableSplit({ left, right, defaultRatio = 0.5, style }: Resiz
       <div className="resizable-pane" style={leftStyle}>
         {left}
       </div>
-      <div className="resize-handle" onPointerDown={onPointerDown} title="拖动调整宽度" />
+      <div
+        className="resize-handle"
+        ref={handleRef}
+        title="拖动调整宽度"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+      />
       <div className="resizable-pane" style={rightStyle}>
         {right}
       </div>

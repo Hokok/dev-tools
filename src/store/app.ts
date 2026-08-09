@@ -80,15 +80,15 @@ document.documentElement.dataset.theme = initial;
 export const useAppStore = create<AppState>((set) => ({
   activeTool: "json-formatter",
   recentToolIds: readRecent(),
-  setActiveTool: (id) =>
-    set((s) => {
-      // 仅真实工具计入最近使用，置顶到头部、去重并截断
-      const recentToolIds = NON_TOOL_IDS.has(id)
-        ? s.recentToolIds
-        : [id, ...s.recentToolIds.filter((x) => x !== id)].slice(0, RECENT_LIMIT);
-      if (recentToolIds !== s.recentToolIds) saveRecent(recentToolIds);
-      return { activeTool: id, recentToolIds };
-    }),
+  setActiveTool: (id) => {
+    // 先读当前 state 计算最近使用，持久化副作用放在 updater 之外（zustand 约定 updater 需纯函数）
+    const s = useAppStore.getState();
+    const recentToolIds = NON_TOOL_IDS.has(id)
+      ? s.recentToolIds
+      : [id, ...s.recentToolIds.filter((x) => x !== id)].slice(0, RECENT_LIMIT);
+    if (recentToolIds !== s.recentToolIds) saveRecent(recentToolIds);
+    set({ activeTool: id, recentToolIds });
+  },
   extractedJson: null,
   setExtractedJson: (json) => set({ extractedJson: json }),
   theme: initial,

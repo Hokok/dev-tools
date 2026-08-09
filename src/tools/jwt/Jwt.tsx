@@ -107,7 +107,7 @@ export function Jwt() {
   return (
     <div className="tool-page">
       <div className="toolbar">
-        <button className="btn" data-hotkey="run" onClick={record} disabled={!token.trim()}>
+        <button className="btn" onClick={record} disabled={!token.trim()}>
           记录
         </button>
         <span className="spacer" />
