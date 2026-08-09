@@ -22,20 +22,35 @@
 
 .tool-history-dropdown {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 6px);
   right: 0;
   z-index: 50;
   width: 320px;
   max-height: 360px;
   overflow-y: auto;
-  background: var(--bg);
+  background: var(--sidebar-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   border: 1px solid var(--sidebar-border);
-  border-radius: 6px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   padding: 6px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  transform-origin: top right;
+  animation: history-in var(--dur-med) var(--ease-out);
+}
+
+@keyframes history-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .tool-history-search {
@@ -94,4 +109,11 @@
 .tool-history-actions {
   display: flex;
   gap: 6px;
+}
+
+/* 尊重系统减少动态效果偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .tool-history-dropdown {
+    animation: none;
+  }
 }

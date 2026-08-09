@@ -32,19 +32,26 @@
   font-size: 13px;
   padding: 4px 12px;
   border: 1px solid var(--btn-border);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   background: var(--btn-bg);
   color: var(--btn-fg);
   cursor: pointer;
   white-space: nowrap;
+  box-shadow: var(--shadow-sm);
   transition:
-    background-color 0.12s ease,
-    border-color 0.12s ease,
-    color 0.12s ease;
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .btn:hover:not(:disabled) {
   background: var(--btn-bg-hover);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .btn:disabled {
@@ -89,12 +96,26 @@
 
 .error-box {
   background: var(--error-bg);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   color: var(--error-fg);
   border: 1px solid var(--error-border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   padding: 8px 12px;
   font-size: 13px;
   white-space: pre-wrap;
+  animation: error-in var(--dur-med) var(--ease-out);
+}
+
+@keyframes error-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .split-view {
@@ -111,9 +132,11 @@
   min-width: 0;
   min-height: 0;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   padding: 8px;
   box-sizing: border-box;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-sm);
 }
 
 .pane-title {
@@ -302,13 +325,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
+  background: var(--bg-elevated);
   border: 2px dashed var(--accent);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   color: var(--accent);
   font-size: 15px;
   z-index: 100;
   pointer-events: none;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  animation: drop-in var(--dur-med) var(--ease-out);
+}
+
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* 设置页：工具列表 */
@@ -328,7 +365,24 @@
   gap: 8px;
   padding: 6px 8px;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+  transition: transform 0.18s var(--ease-out);
+}
+
+.settings-item:not(:has(> .drag-handle)) {
+  cursor: default;
+}
+
+.settings-list.dragging .settings-item {
+  cursor: grabbing;
+}
+
+/* 提交帧抑制过渡，避免落点弹跳 */
+.settings-list.no-anim .settings-item {
+  transition: none;
 }
 
 .settings-toggle {
@@ -339,7 +393,6 @@
 
 .settings-toggle input {
   margin: 0;
-  cursor: pointer;
 }
 
 .settings-name {
@@ -356,17 +409,38 @@
   padding: 2px 0;
 }
 
+.drag-handle:hover {
+  color: var(--fg);
+}
+
 .drag-handle:active {
   cursor: grabbing;
 }
 
 .settings-item.dragging {
-  opacity: 0.4;
+  opacity: 0.35;
+  border-style: dashed;
+  box-shadow: none;
+  transition: none;
 }
 
-.settings-item.drag-over {
-  border-color: var(--accent);
-  background: var(--sidebar-hover);
+/* 跟随鼠标的浮动拖拽卡片 */
+.settings-drag-card {
+  position: fixed;
+  z-index: 120;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  min-width: 160px;
+  border: 1px solid var(--sidebar-border);
+  border-radius: var(--radius-sm);
+  background: var(--sidebar-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-lg);
+  will-change: transform;
 }
 
 /* 新工具通用表单/列表样式 */
@@ -532,5 +606,44 @@
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
+}
+
+/* 列表项入场动效（一次性） */
+.match-item,
+.hash-item,
+.path-item,
+.tool-history-item {
+  animation: item-in var(--dur-med) var(--ease-out) both;
+}
+
+@keyframes item-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 尊重系统减少动态效果偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .error-box,
+  .drop-hint,
+  .match-item,
+  .hash-item,
+  .path-item,
+  .tool-history-item {
+    animation: none;
+  }
+
+  .settings-item {
+    transition: none;
+  }
+
+  .btn {
+    transition: none;
+  }
 }
