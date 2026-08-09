@@ -471,3 +471,34 @@ body,
     transition: none;
   }
 }
+
+/* 窄窗口：侧边栏收缩为纯图标条，为编辑器腾出空间 */
+@media (max-width: 860px) {
+  .sidebar {
+    width: 48px;
+    padding: 8px 4px;
+  }
+
+  .tool-btn {
+    justify-content: center;
+    padding: 8px;
+    gap: 0;
+  }
+
+  .tool-btn-label {
+    display: none;
+  }
+
+  .sidebar-group-header {
+    justify-content: center;
+    padding: 6px 4px;
+  }
+
+  .sidebar-group-label {
+    display: none;
+  }
+
+  .sidebar-group-arrow {
+    width: auto;
+  }
+}
