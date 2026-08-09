@@ -31,6 +31,20 @@ export default defineConfig(async () => ({
     exclude: ["monaco-editor"],
   },
 
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // 将 Monaco editor.api 核心模块提取到共享 chunk，避免主入口和 jsonMode
+          // 动态 import 分别打包导致两套 languages 实例，语法高亮无法生效
+          if (id.includes("/monaco-editor/esm/vs/editor/editor.api")) {
+            return "monaco-core";
+          }
+        },
+      },
+    },
+  },
+
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent Vite from obscuring rust errors
