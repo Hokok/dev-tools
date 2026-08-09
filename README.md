@@ -29,31 +29,11 @@
 
 ## 界面截图
 
-![主界面](docs/screenshots/00-home.png)
-
 ![JSON 格式化](docs/screenshots/01-json-formatter.png)
 
 ![JSON 比对](docs/screenshots/02-json-diff.png)
 
 ![日志提取](docs/screenshots/03-log-extractor.png)
-
-![文本比对](docs/screenshots/04-text-diff.png)
-
-![表格导出](docs/screenshots/05-json-table.png)
-
-![Curl 执行](docs/screenshots/06-curl-runner.png)
-
-![时间戳](docs/screenshots/07-timestamp.png)
-
-![Hash 计算](docs/screenshots/08-hash.png)
-
-![JWT 解析](docs/screenshots/09-jwt.png)
-
-![图片预览](docs/screenshots/10-image-preview.png)
-
-![编码转换](docs/screenshots/11-encode-convert.png)
-
-![字段提取](docs/screenshots/12-field-extract.png)
 
 ## 技术栈
 
