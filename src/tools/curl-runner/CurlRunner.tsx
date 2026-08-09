@@ -79,7 +79,7 @@ export function CurlRunner() {
 
       <div className="pane" style={{ flex: 1 }}>
         <div className="pane-title">curl 脚本</div>
-        <JsonEditor value={input} onChange={setInput} language="text" />
+        <JsonEditor value={input} onChange={setInput} language="shell" />
       </div>
 
       {result && view && (
