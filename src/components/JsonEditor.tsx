@@ -11,6 +11,8 @@ export const editorOptions: editor.IStandaloneEditorConstructionOptions = {
   wordWrap: "on",
   renderWhitespace: "none",
   lineNumbersMinChars: 3,
+  // 容器尺寸变化（如分栏拖拽）时自动重算布局，否则高亮/可见区域会错位
+  automaticLayout: true,
 };
 
 interface JsonEditorProps {
@@ -40,14 +42,6 @@ export function JsonEditor({
   const handleMount: OnMount = (ed, monaco) => {
     editorRef.current = ed;
     onMount?.(ed, monaco);
-    // 调试：检查 Monaco 语言注册和 worker 状态
-    if (import.meta.env.DEV) {
-      const langs = monaco.languages.getLanguages();
-      console.log("[Monaco] languages:", langs.length, langs.map((l) => l.id).join(","));
-      console.log("[Monaco] models:", monaco.editor.getModels().length);
-      const jsonLang = monaco.languages.getLanguages().find((l) => l.id === "json");
-      console.log("[Monaco] JSON lang:", !!jsonLang, jsonLang?.extensions);
-    }
   };
 
   // 解析错误时定位光标到出错行列
