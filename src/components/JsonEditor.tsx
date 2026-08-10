@@ -91,7 +91,7 @@ export function JsonEditor({
     <Editor
       height={height}
       language={language}
-      theme={theme === "dark" ? "vs-dark" : "light"}
+      theme={theme === "dark" ? "devbox-dark" : "devbox-light"}
       defaultValue={value}
       onChange={(v) => {
         const next = v ?? "";

@@ -14,22 +14,17 @@ import { loader } from "@monaco-editor/react";
 // Standalone JSON Monarch tokenizer — no jsonc-parser dependency.
 // tokenization.js 的 createTokenizationSupport 依赖 jsonc-parser 的 createScanner，
 // 该深层相对路径在 Vite bundle 时无法正确解析导致 tokenizer 被 tree-shaken。
-// 注意：Monarch token 名必须使用 Monaco 默认主题已定义的 token 类型
-// （string / comment / keyword / number / delimiter），否则不会着色。
+// 状态机区分 key / value 字符串，分别着色。
 const JSON_TOKENIZER: monaco.languages.IMonarchLanguage = {
   tokenizer: {
     root: [
       [/\/\*/, "comment", "@commentBlock"],
       [/\/\/.*$/, "comment"],
-      [/"/, "string", "@string"],
+      [/"(?:[^"\\]|\\.)*"\s*:/, "string.key"],
+      [/"(?:[^"\\]|\\.)*"/, "string.value"],
       [/-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?/, "number"],
       [/\b(true|false|null)\b/, "keyword"],
       [/[{}[\]:,]/, "delimiter"],
-    ],
-    string: [
-      [/[^"\\]+/, "string"],
-      [/\\./, "string.escape"],
-      [/"/, "string", "@pop"],
     ],
     commentBlock: [
       [/[^/*]+/, "comment"],
@@ -65,5 +60,23 @@ self.MonacoEnvironment = {
     return new editorWorker();
   },
 };
+
+// 自定义主题：JSON key 用青蓝色，value 保持基主题的暖橙色
+monaco.editor.defineTheme("devbox-dark", {
+  base: "vs-dark",
+  inherit: true,
+  rules: [
+    { token: "string.key", foreground: "9cdcfe" },
+  ],
+  colors: {},
+});
+monaco.editor.defineTheme("devbox-light", {
+  base: "vs",
+  inherit: true,
+  rules: [
+    { token: "string.key", foreground: "0451a5" },
+  ],
+  colors: {},
+});
 
 loader.config({ monaco });

@@ -32,7 +32,7 @@ export function TextDiffEditor({
     <DiffEditor
       height={height}
       language={language}
-      theme={theme === "dark" ? "vs-dark" : "light"}
+      theme={theme === "dark" ? "devbox-dark" : "devbox-light"}
       original={original}
       modified={modified}
       onMount={handleMount}
