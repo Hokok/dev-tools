@@ -31,6 +31,7 @@ export async function readFileAsUtf8(file: File): Promise<string> {
 
 // 开发期自检：各编码解码边界行为（与 utils/encoding.ts 自检同模式）
 if (import.meta.env.DEV) {
+  try {
   const assertEq = (actual: string, expect: string, label: string) => {
     if (actual !== expect) throw new Error(`[fileEncoding self-check] ${label}: 期望 ${expect}，实际 ${actual}`);
   };
@@ -43,4 +44,9 @@ if (import.meta.env.DEV) {
   // GBK 中文「你好」= C4E3 BAC3，UTF-8 严格校验应失败并回退 GB18030
   assertEq(decodeBytes(new Uint8Array([0xc4, 0xe3, 0xba, 0xc3])), "你好", "GBK 回退");
   console.log("[fileEncoding] 自检通过");
+  } catch (e) {
+    // 个别 Webview（如部分 Chrome/自动测试环境）对 TextDecoder 编码参数校验严格，
+    // 自检抛错不应拖垮整个应用挂载，记录后忽略。
+    console.warn("[fileEncoding] 自检跳过：", e instanceof Error ? e.message : String(e));
+  }
 }
