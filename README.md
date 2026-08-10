@@ -59,10 +59,10 @@ pnpm install
 # 开发模式（热重载）
 pnpm tauri dev
 
-# 生产构建（产出 .app）
+# 生产构建（产出 .app，自动清理旧 dist 重新打包）
 pnpm tauri build
 
-# 类型检查
+# 类型检查（会先清理 dist 再重新构建）
 pnpm build
 ```
 
