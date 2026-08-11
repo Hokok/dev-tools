@@ -1,5 +1,6 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import "monaco-editor/esm/vs/editor/contrib/folding/browser/folding.js";
+import "monaco-editor/esm/vs/editor/contrib/find/browser/findController.js";
 import "monaco-editor/esm/vs/languages/definitions/shell/register.js";
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker.js?worker";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker.js?worker";

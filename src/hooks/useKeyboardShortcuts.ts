@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { monaco } from "../monaco-setup";
 import { TOOLS } from "../tools";
 import { useAppStore } from "../store/app";
 import { useSettingsStore } from "../store/settings";
@@ -20,14 +21,12 @@ export function useKeyboardShortcuts(setCmdOpen: (open: boolean) => void): void 
 
       if (isMod(e) && e.key === "f") {
         e.preventDefault();
-        import("../monaco-setup").then(({ monaco }) => {
-          const editors = monaco.editor.getEditors();
-          const active = editors.find((ed) => ed.hasTextFocus());
-          if (active) {
-            active.focus();
-            active.getAction("actions.find")?.run();
-          }
-        });
+        const editors = monaco.editor.getEditors();
+        const active = editors.find((ed) => ed.hasTextFocus());
+        if (active) {
+          active.focus();
+          active.trigger("keyboard", "actions.find", null);
+        }
         return;
       }
 
