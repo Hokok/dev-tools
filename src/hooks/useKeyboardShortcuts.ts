@@ -18,6 +18,19 @@ export function useKeyboardShortcuts(setCmdOpen: (open: boolean) => void): void 
         return;
       }
 
+      if (isMod(e) && e.key === "f") {
+        e.preventDefault();
+        import("../monaco-setup").then(({ monaco }) => {
+          const editors = monaco.editor.getEditors();
+          const active = editors.find((ed) => ed.hasTextFocus());
+          if (active) {
+            active.focus();
+            active.getAction("actions.find")?.run();
+          }
+        });
+        return;
+      }
+
       if (!isMod(e)) return;
 
       if (e.key >= "1" && e.key <= "9") {

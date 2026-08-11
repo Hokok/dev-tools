@@ -80,3 +80,5 @@ monaco.editor.defineTheme("devbox-light", {
 });
 
 loader.config({ monaco });
+
+export { monaco };
